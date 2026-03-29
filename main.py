@@ -7,7 +7,7 @@ from PyQt5.QtCore import Qt, QPropertyAnimation, QRect, QEasingCurve
 from PyQt5.QtGui import QFont
 from gui.views.view_my_pr import ViewMyPR
 from viewmodels.viewmodel_my_pr import ViewModelMyPR
-from models.model_my_pr import ModelMyPR
+from sources.gitlab.gitlab_model_my_pr import GitlabModelMyPR
 
 
 class Carousel(QWidget):
@@ -113,7 +113,7 @@ class MainWindow(QMainWindow):
         hello.setAlignment(Qt.AlignCenter)
         hello.setFont(QFont("Arial", 24))
 
-        gitlab = ViewMyPR(model=ViewModelMyPR(model=ModelMyPR(title="gitlab", pr_names_list=["mr1", "mr2"])))
+        gitlab = ViewMyPR(model=ViewModelMyPR(model=GitlabModelMyPR()))
 
         carousel = Carousel([hello, gitlab])
         self.setCentralWidget(carousel)
