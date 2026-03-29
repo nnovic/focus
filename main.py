@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QLabel,
-    QHBoxLayout, QVBoxLayout, QPushButton, QStackedWidget
+    QHBoxLayout, QVBoxLayout, QPushButton, QStackedWidget, QListWidget
 )
 from PyQt5.QtCore import Qt, QPropertyAnimation, QRect, QEasingCurve
 from PyQt5.QtGui import QFont
@@ -110,9 +110,23 @@ class MainWindow(QMainWindow):
         hello.setAlignment(Qt.AlignCenter)
         hello.setFont(QFont("Arial", 24))
 
-        gitlab = QLabel("gitlab")
-        gitlab.setAlignment(Qt.AlignCenter)
-        gitlab.setFont(QFont("Arial", 24))
+        gitlab = QWidget()
+        gitlab_layout = QVBoxLayout(gitlab)
+        gitlab_layout.setAlignment(Qt.AlignTop)
+
+        gitlab_title = QLabel("gitlab")
+        gitlab_title.setAlignment(Qt.AlignCenter)
+        gitlab_title.setFont(QFont("Arial", 24))
+
+        mr_title = QLabel("merge request")
+        mr_title.setFont(QFont("Arial", 14, QFont.Bold))
+
+        mr_list = QListWidget()
+        mr_list.addItems(["mr1", "mr2"])
+
+        gitlab_layout.addWidget(gitlab_title)
+        gitlab_layout.addWidget(mr_title)
+        gitlab_layout.addWidget(mr_list)
 
         carousel = Carousel([hello, gitlab])
         self.setCentralWidget(carousel)
