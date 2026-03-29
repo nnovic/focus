@@ -21,9 +21,24 @@ class MainWindow(QMainWindow):
         hello.setAlignment(Qt.AlignCenter)
         hello.setFont(QFont("Arial", 24))
 
-        source = GitlabSource(config=GitlabConfig())
+        self._carousel = Carousel([hello])
+        self.setCentralWidget(self._carousel)
+
+        self.__populate_carousel()
+
+    def __populate_carousel(self):
+        gitlab_config = self._focus_app.config.get_source_config("1")
+        source = GitlabSource(config=gitlab_config)
         source.connect()
         gitlab = ViewMyPR(model=ViewModelMyPR(model=source.get_model_my_pr()))
+        self._carousel._pages.append(gitlab)
+        self._carousel._stack.addWidget(gitlab)
 
-        carousel = Carousel([hello, gitlab])
-        self.setCentralWidget(carousel)
+        # Add dot indicator for the new page
+        dot = QLabel("●")
+        dot.setAlignment(Qt.AlignCenter)
+        self._carousel._dots.append(dot)
+        self._carousel.layout().itemAt(1).addWidget(dot)  # Add to dots_layout
+
+        # Update navigation buttons
+        self._carousel._update_ui()

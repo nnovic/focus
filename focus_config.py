@@ -5,6 +5,7 @@ from sources.gitlab.gitlab_source import GitlabConfig
 
 class FocusConfig:
     def __init__(self):
+        self.__config = {}
         self.__load_config()
 
     def __load_config(self):
@@ -21,4 +22,8 @@ class FocusConfig:
         if sources_element is not None:
             for source in sources_element:
                 if source.tag == "gitlab":
-                    GitlabConfig(source)
+                    
+                    self.__config[source.get("source_id")] = GitlabConfig(source)
+
+    def get_source_config(self, id: str):
+        return self.__config[id]
