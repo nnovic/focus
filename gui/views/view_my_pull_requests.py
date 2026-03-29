@@ -18,12 +18,13 @@ class ViewMyPullRequests(QWidget, AbstractView):
         layout.addWidget(self.label)
 
         # List
-        list_widget = QListWidget()
-        list_widget.addItem(QListWidgetItem("mr1"))
-        list_widget.addItem(QListWidgetItem("mr2"))
-        layout.addWidget(list_widget)
+        self.list_widget = QListWidget()
+        layout.addWidget(self.list_widget)
 
         self.setLayout(layout)
 
     def refresh(self, model: ModelMyPullRequests):
         self.label.setText("gitlab")
+        self.list_widget.clear()
+        self.list_widget.addItem(QListWidgetItem("mr1"))
+        self.list_widget.addItem(QListWidgetItem("mr2"))
