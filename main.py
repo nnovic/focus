@@ -33,7 +33,7 @@ class Carousel(QWidget):
         self._dots: list[QLabel] = []
         dots_layout = QHBoxLayout()
         dots_layout.setAlignment(Qt.AlignCenter)
-        for i in range(len(pages)):
+        for _ in range(len(pages)):
             dot = QLabel("●")
             dot.setAlignment(Qt.AlignCenter)
             self._dots.append(dot)
@@ -110,7 +110,11 @@ class MainWindow(QMainWindow):
         hello.setAlignment(Qt.AlignCenter)
         hello.setFont(QFont("Arial", 24))
 
-        carousel = Carousel([hello])
+        gitlab = QLabel("gitlab")
+        gitlab.setAlignment(Qt.AlignCenter)
+        gitlab.setFont(QFont("Arial", 24))
+
+        carousel = Carousel([hello, gitlab])
         self.setCentralWidget(carousel)
 
 
