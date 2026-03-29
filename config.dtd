@@ -1,0 +1,6 @@
+<!ELEMENT focus (config)>
+<!ELEMENT config (sources)>
+<!ELEMENT sources (gitlab)*>
+<!ELEMENT gitlab (credentials)>
+<!ELEMENT credentials EMPTY>
+<!ATTLIST credentials token CDATA #REQUIRED>
