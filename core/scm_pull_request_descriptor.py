@@ -1,4 +1,13 @@
-from typing import Any
+from typing import Any, Final
+
+
+class ScmPullRequestPriority:
+    READY_TO_MERGE_AND_UPVOTED: Final[int] = 90
+    READY_TO_MERGE: Final[int] = 80
+    HAS_ISSUES: Final[int] = 70
+    IS_UPVOTED: Final[int] = 60
+    IS_TOO_OLD: Final[int] = 50
+    DEFAULT: Final[int] = 40
 
 
 class ScmPullRequestDescriptor:
@@ -26,24 +35,43 @@ class ScmPullRequestDescriptor:
         - MR getting old
         - MR with no upvotes
         """
-        return self.__get_coarse_priority()
-    
-    def __get_coarse_priority(self) -> int :
-        if self.is_ready_to_merge:
-            return 90
-        if self.has_open_discussions:
-            return 80
-        return 50
-    
+        prio = evaluate_priority(self)
+        if prio < 0:
+            prio = 0
+        if prio > 100:
+            prio = 100
+        return prio
+
     @property
-    def is_ready_to_merge(self) -> bool|None:
+    def is_ready_to_merge(self) -> bool | None:
         return None
-    
+
     @property
-    def has_open_discussions(self) -> bool|None:
+    def has_issues(self) -> bool | None:
         return None
-    
-    
+
     @property
-    def has_open_discussions(self) -> bool|None:
-        return None
+    def upvotes(self) -> int:
+        return -1
+
+
+def evaluate_priority(desc: ScmPullRequestDescriptor) -> int:
+    prio = 0
+    if desc.has_issues:
+        prio = ScmPullRequestPriority.HAS_ISSUES
+    elif desc.is_ready_to_merge:
+        if desc.upvotes > 0:
+            prio = ScmPullRequestPriority.READY_TO_MERGE_AND_UPVOTED
+        else:
+            prio = ScmPullRequestPriority.READY_TO_MERGE
+    elif desc.upvotes > 0:
+        prio = ScmPullRequestPriority.IS_UPVOTED
+    else:
+        prio = ScmPullRequestPriority.DEFAULT
+    prio += __fine_tune_priority_by_age(desc)
+    return prio
+
+
+def __fine_tune_priority_by_age(desc: ScmPullRequestDescriptor) -> int:
+    return 0
+

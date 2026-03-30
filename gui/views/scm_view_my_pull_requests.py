@@ -28,5 +28,5 @@ class ScmViewMyPullRequests(QWidget):
         self.list_widget.clear()
         
         for desc in model.pull_requests:
-            text = desc.title
+            text = str(desc.priority) + "---" + desc.title
             self.list_widget.addItem(QListWidgetItem(text))

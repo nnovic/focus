@@ -3,6 +3,7 @@ from typing import Any
 from core.scm_model_my_pull_requests import ScmModelMyPullRequests
 from core.scm_pull_request_descriptor import ScmPullRequestDescriptor
 
+
 class GitlabPullRequestDescriptor(ScmPullRequestDescriptor):
 
     def __init__(self, merge_request):
@@ -22,15 +23,22 @@ class GitlabPullRequestDescriptor(ScmPullRequestDescriptor):
         return self.__mr.web_url
 
     @property
-    def is_ready_to_merge(self) -> bool|None:
-        return self.__mr.merge_status == 'can_be_merged'
-    
+    def is_ready_to_merge(self) -> bool | None:
+        return self.__mr.detailed_merge_status == 'mergeable'
+        #return self.__mr.merge_status == 'can_be_merged' and self.__mr.detailed_merge_status == 'mergeable'
+
+
     @property
-    def has_open_discussions(self) -> bool|None:
-        return self.__mr.blocking_discussions_resolved is False
-    
-    # def has_no_upvotes
-    
+    def has_issues(self) -> bool | None:
+        has_open_discussions = self.__mr.blocking_discussions_resolved is False
+        is_down_voted = self.__mr.downvotes > 0
+        has_conflicts = self.__mr.has_conflicts
+        return has_open_discussions or is_down_voted or has_conflicts
+
+    @property
+    def upvotes(self) -> int:
+        return self.__mr.upvotes
+
 
 class GitlabModelMyPullRequests(ScmModelMyPullRequests):
 
@@ -44,15 +52,13 @@ class GitlabModelMyPullRequests(ScmModelMyPullRequests):
     def _refresh(self, gl):
         mrs = gl.mergerequests.list(
             author_id=gl.user.id, state="opened", get_all=True)
-        
+
         new_list = []
         for mr in mrs:
             desc = GitlabPullRequestDescriptor(mr)
             new_list.append(desc)
 
         self.__list = new_list
-        
-    @property
-    def pull_requests(self) -> list[ScmPullRequestDescriptor]:
+
+    def _get_pull_requests(self) -> list[ScmPullRequestDescriptor]:
         return self.__list
-    
