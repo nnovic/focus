@@ -21,7 +21,16 @@ class GitlabPullRequestDescriptor(ScmPullRequestDescriptor):
     def url(self) -> str | None:
         return self.__mr.web_url
 
-
+    @property
+    def is_ready_to_merge(self) -> bool|None:
+        return self.__mr.merge_status == 'can_be_merged'
+    
+    @property
+    def has_open_discussions(self) -> bool|None:
+        return self.__mr.blocking_discussions_resolved is False
+    
+    # def has_no_upvotes
+    
 
 class GitlabModelMyPullRequests(ScmModelMyPullRequests):
 

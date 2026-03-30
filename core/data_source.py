@@ -14,3 +14,6 @@ class DataSource:
 
     def get_model(self, type_hint: str) -> Any:
         raise NotImplementedError()
+
+    def configure(self, config: Any):
+        raise NotImplementedError()

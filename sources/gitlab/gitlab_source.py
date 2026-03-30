@@ -10,10 +10,14 @@ class GitlabSource(DataSource):
     def __init__(self):
         self.__gl = None
         self.__my_pull_requests = GitlabModelMyPullRequests()
+        self.__config = None
+
+    def configure(self, config: Any):
+        self.__config = config
 
     def connect(self) -> None:
         self.__gl = gitlab.Gitlab("https://gitlab.com",
-                       private_token="glpat-yYaYNc66ImFGHV-RJbt3bGM6MQpvOjEKdTo0b2Niag8.01.170oeoqsw")
+                       private_token=self.__config.personal_access_token)
         self.__gl.auth()
     
 
