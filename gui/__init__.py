@@ -1,4 +1,4 @@
 from .carousel import Carousel
-from .mainwindow import MainWindow
+from .main_window import MainWindow
 
 __all__ = ["Carousel", "MainWindow"]

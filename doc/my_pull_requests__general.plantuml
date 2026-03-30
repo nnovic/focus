@@ -1,0 +1,45 @@
+@startuml
+title General class diagram for "My pull requests"
+
+package gitlab {
+class GitlabSource {
+	+ connect()
+	+ disconnect()
+	+ refresh()
+	+ get_model(type)
+}
+class GitlabConfig {
+	+ personal_access_token
+}
+class GitlabModelMyPullRequests{
+	# _refresh(gl)
+}
+
+}
+
+package core {
+class DataSource
+
+class ScmModelMyPullRequests {
+	- overall_priority
+	- pull_requests: list
+
+}
+
+class ScmPullRequestDescriptor {
+	+ url
+	+ title
+	+ reference
+	+ state
+	+ priority
+}
+
+ScmModelMyPullRequests o- ScmPullRequestDescriptor
+}
+
+GitlabModelMyPullRequests -|> ScmModelMyPullRequests
+GitlabSource -|> DataSource
+GitlabSource .. GitlabConfig
+GitlabSource *- GitlabModelMyPullRequests
+
+@enduml
