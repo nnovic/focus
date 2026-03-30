@@ -2,11 +2,11 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QListWidget, QListWidgetItem, 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 
-from gui.abstract_view import AbstractView
-from models.model_my_pull_requests import ModelMyPullRequests
+from core.scm_model_my_pull_requests import ScmModelMyPullRequests
 
 
-class ViewMyPullRequests(QWidget, AbstractView):
+
+class ScmViewMyPullRequests(QWidget):
     def __init__(self):
         super().__init__()
         layout = QVBoxLayout()
@@ -23,8 +23,10 @@ class ViewMyPullRequests(QWidget, AbstractView):
 
         self.setLayout(layout)
 
-    def refresh(self, model: ModelMyPullRequests):
+    def refresh(self, model: ScmModelMyPullRequests):
         self.label.setText(model.title)
         self.list_widget.clear()
-        self.list_widget.addItem(QListWidgetItem("mr1"))
-        self.list_widget.addItem(QListWidgetItem("mr2"))
+        
+        for desc in model.pull_requests:
+            text = desc.title
+            self.list_widget.addItem(QListWidgetItem(text))
