@@ -1,11 +1,10 @@
-from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QScrollArea, QFrame, QApplication, QStyle
-)
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QScrollArea
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 
 from core.scm_model_my_pull_requests import ScmModelMyPullRequests
 from gui.views.concrete_view import ConcreteView
+from gui.widgets.pull_request_card import PullRequestCard
 from .abstract_view import AbstractView
 
 
@@ -35,43 +34,6 @@ class ScmViewMyPullRequests(ConcreteView):
 
         self.setLayout(main_layout)
 
-    def _make_card(self, desc):
-        """Create a PR card widget."""
-        card = QFrame()
-        card.setStyleSheet("QFrame { border: 1px solid #ccc; border-radius: 12px; background-color: white; }")
-        card.setFixedHeight(100)
-
-        layout = QHBoxLayout()
-        layout.setSpacing(15)
-        layout.setContentsMargins(10, 10, 10, 10)
-
-        # Icon
-        icon_label = QLabel()
-        icon = QApplication.style().standardIcon(QStyle.SP_FileDialogDetailedView)
-        icon_label.setPixmap(icon.pixmap(48, 48))
-        layout.addWidget(icon_label)
-
-        # Right side: title and URL
-        right_layout = QVBoxLayout()
-        right_layout.setSpacing(5)
-
-        title_label = QLabel(desc.title)
-        title_label.setFont(QFont("Arial", 12, QFont.Bold))
-        title_label.setWordWrap(True)
-        right_layout.addWidget(title_label)
-
-        url_label = QLabel(desc.url or "(No URL)")
-        url_label.setFont(QFont("Arial", 10))
-        url_label.setStyleSheet("color: #0066cc;")
-        url_label.setWordWrap(True)
-        right_layout.addWidget(url_label)
-
-        right_layout.addStretch()
-        layout.addLayout(right_layout, 1)
-
-        card.setLayout(layout)
-        return card
-
     @property
     def best_models(self) -> list[type]:
         return [ScmModelMyPullRequests]
@@ -90,7 +52,7 @@ class ScmViewMyPullRequests(ConcreteView):
         row.setSpacing(10)
 
         for i, desc in enumerate(model.pull_requests):
-            card = self._make_card(desc)
+            card = PullRequestCard(desc)
             row.addWidget(card)
 
             # Every 2 cards, start a new row
