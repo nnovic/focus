@@ -1,5 +1,7 @@
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QLabel, QApplication, QStyle
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont, QCursor
+from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtGui import QDesktopServices
 
 from core.scm_pull_request_descriptor import ScmPullRequestDescriptor
 
@@ -38,8 +40,11 @@ class PullRequestCard(QFrame):
 
         url_label = QLabel(self.descriptor.url or "(No URL)")
         url_label.setFont(QFont("Arial", 10))
-        url_label.setStyleSheet("color: #0066cc;")
+        url_label.setStyleSheet("color: #0066cc; text-decoration: underline;")
         url_label.setWordWrap(True)
+        url_label.setCursor(QCursor(Qt.PointingHandCursor))
+        if self.descriptor.url:
+            url_label.mousePressEvent = lambda _: QDesktopServices.openUrl(QUrl(self.descriptor.url))
         right_layout.addWidget(url_label)
 
         right_layout.addStretch()
