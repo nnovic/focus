@@ -3,10 +3,11 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 
 from core.scm_model_my_pull_requests import ScmModelMyPullRequests
+from gui.views.concrete_view import ConcreteView
 from .abstract_view import AbstractView
 
 
-class ScmViewMyPullRequests(AbstractView, QWidget):
+class ScmViewMyPullRequests(ConcreteView):
     def __init__(self):
         super().__init__()
         layout = QVBoxLayout()

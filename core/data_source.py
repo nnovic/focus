@@ -2,6 +2,7 @@ from typing import Any
 
 
 class DataSource:
+	
 
     def connect(self) -> None:
         raise NotImplementedError()

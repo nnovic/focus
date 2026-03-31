@@ -27,15 +27,35 @@ class MainWindow(QMainWindow):
         # Add views from config
         for view_id, view_cfg in self.__app.config.views.items():
             src = self.__app.get_source(view_cfg.source_id)
-            src.refresh()
+            #src.refresh()
 
             view_class = getattr(views, view_cfg.class_name)
             view = view_class()
+            view.source_id = view_cfg.source_id
 
             # Try each preferred model type until one is available
             for model_class in view.best_models:
                 model = src.get_model(model_class)
                 if model is not None:
                     view.refresh(model)
-                    carousel.add_page(view)
+                    carousel.add_view(view)
                     break
+
+        # Refresh sources
+        for src_id in self.__app.sources:
+            src = self.__app.get_source(src_id)
+            src.refresh()
+
+        # Refresh views
+        for view in carousel.views:
+            src_id = view.source_id
+            src = self.__app.get_source(src_id)
+
+            # Try each preferred model type until one is available
+            for model_class in view.best_models:
+                model = src.get_model(model_class)
+                if model is not None:
+                    view.refresh(model)
+                    break
+
+        pass

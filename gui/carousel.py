@@ -4,6 +4,9 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, QPropertyAnimation, QRect, QEasingCurve
 from PyQt5.QtGui import QFont
 
+from gui.views.abstract_view import AbstractView
+from gui.views.concrete_view import ConcreteView
+
 
 class Carousel(QWidget):
     def __init__(self, pages: list[QWidget], parent=None):
@@ -90,7 +93,7 @@ class Carousel(QWidget):
         # Keep references alive until animation finishes
         self._anims = (anim_out, anim_in)
 
-    def add_page(self, page: QWidget):
+    def add_view(self, page: ConcreteView):
         """Add a page to the carousel after creation."""
         self._pages.append(page)
         self._stack.addWidget(page)
@@ -104,6 +107,11 @@ class Carousel(QWidget):
         dots_layout.addWidget(dot)
 
         self._update_ui()
+
+    @property
+    def views(self) -> list[AbstractView]:
+        """Return the list of views in the carousel."""
+        return [page for page in self._pages if isinstance(page, AbstractView)]
 
     def _update_ui(self):
         self._btn_prev.setEnabled(self._current > 0)

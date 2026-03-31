@@ -3,7 +3,7 @@ from typing import Any
 from core.data_source import DataSource
 import gitlab
 
-from sources.gitlab.gitlab_models import GitlabModelMyPullRequests
+from plugins.gitlab.gitlab_models import GitlabModelMyPullRequests
 
 class GitlabSource(DataSource):
 
@@ -17,7 +17,7 @@ class GitlabSource(DataSource):
 
     def connect(self) -> None:
         self.__gl = gitlab.Gitlab("https://gitlab.com",
-                       private_token=self.__config.personal_access_token)
+                       private_token=self.__config.token)
         self.__gl.auth()
     
 

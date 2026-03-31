@@ -7,7 +7,7 @@ from gui import MainWindow
 
 def main():
     focus_app = FocusApp()
-    
+    focus_app.start()
     qapp = QApplication(sys.argv)
     window = MainWindow(focus_app)
     window.show()
