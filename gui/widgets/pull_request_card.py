@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QLabel, QApplication, QStyle
-from PyQt5.QtGui import QFont, QCursor
-from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtGui import QFont, QCursor, QPixmap, QPainter
+from PyQt5.QtCore import Qt, QUrl, QRect
 from PyQt5.QtGui import QDesktopServices
 
 from core.scm_pull_request_descriptor import ScmPullRequestDescriptor
@@ -29,6 +29,12 @@ class PullRequestCard(QFrame):
         layout.setSpacing(15)
         layout.setContentsMargins(10, 10, 10, 10)
 
+        # Icon container with upvotes badge
+        icon_container = QFrame()
+        icon_container.setFixedSize(64, 64)
+        icon_container_layout = QHBoxLayout()
+        icon_container_layout.setContentsMargins(0, 0, 0, 0)
+
         # Icon - choose based on PR status
         icon_label = QLabel()
         if self.descriptor.has_issues:
@@ -38,7 +44,19 @@ class PullRequestCard(QFrame):
         else:
             icon = QApplication.style().standardIcon(QStyle.SP_FileDialogDetailedView)
         icon_label.setPixmap(icon.pixmap(48, 48))
-        layout.addWidget(icon_label)
+        icon_container_layout.addWidget(icon_label)
+        icon_container.setLayout(icon_container_layout)
+
+        # Add upvotes badge if >= 1
+        if self.descriptor.upvotes >= 1:
+            upvotes_badge = QLabel()
+            upvotes_badge.setText(f"👍 {self.descriptor.upvotes}")
+            upvotes_badge.setFont(QFont("Arial", 9, QFont.Bold))
+            upvotes_badge.setStyleSheet("background-color: #FFD700; border-radius: 6px; padding: 2px 4px;")
+            upvotes_badge.setAlignment(Qt.AlignCenter)
+            icon_container_layout.addWidget(upvotes_badge, alignment=Qt.AlignRight | Qt.AlignBottom)
+
+        layout.addWidget(icon_container)
 
         # Right side: title and URL
         right_layout = QVBoxLayout()
