@@ -1,16 +1,28 @@
 from typing import Any, Final
+from datetime import datetime
 
 
 class ScmPullRequestPriority:
     READY_TO_MERGE_AND_UPVOTED: Final[int] = 90
     READY_TO_MERGE: Final[int] = 80
-    HAS_ISSUES: Final[int] = 70
-    IS_UPVOTED: Final[int] = 60
-    IS_TOO_OLD: Final[int] = 50
-    DEFAULT: Final[int] = 40
+    IS_UPVOTED: Final[int] = 70
+    HAS_ISSUES: Final[int] = 60
+    DEFAULT: Final[int] = 50
+    IS_TOO_OLD: Final[int] = 40
 
 
 class ScmPullRequestDescriptor:
+
+    @property
+    def days_old(self) -> int | None:
+        if self.created_at is None:
+            return None
+        delta = datetime.now() - self.created_at
+        return delta.days
+    
+    @property
+    def created_at(self) -> datetime | None:
+        return None
 
     @property
     def uuid(self) -> Any:
@@ -57,7 +69,9 @@ class ScmPullRequestDescriptor:
 
 def evaluate_priority(desc: ScmPullRequestDescriptor) -> int:
     prio = 0
-    if desc.has_issues:
+    if __is_too_old(desc):
+        prio = ScmPullRequestPriority.IS_TOO_OLD
+    elif desc.has_issues:
         prio = ScmPullRequestPriority.HAS_ISSUES
     elif desc.is_ready_to_merge:
         if desc.upvotes > 0:
@@ -74,4 +88,9 @@ def evaluate_priority(desc: ScmPullRequestDescriptor) -> int:
 
 def __fine_tune_priority_by_age(desc: ScmPullRequestDescriptor) -> int:
     return 0
+
+def __is_too_old(desc: ScmPullRequestDescriptor) -> bool:
+    if desc.days_old is None:
+        return False
+    return desc.days_old > 30
 
