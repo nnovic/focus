@@ -16,7 +16,8 @@ class PullRequestCard(QFrame):
 
     def _init_ui(self):
         """Initialize the card UI."""
-        self.setStyleSheet("QFrame { border: 1px solid #ccc; border-radius: 12px; background-color: white; }")
+        bg_color = "#e8f5e9" if self.descriptor.is_ready_to_merge else "white"
+        self.setStyleSheet(f"QFrame {{ border: 1px solid #ccc; border-radius: 12px; background-color: {bg_color}; }}")
         self.setFixedHeight(100)
 
         layout = QHBoxLayout()
