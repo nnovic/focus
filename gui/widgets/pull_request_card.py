@@ -27,6 +27,8 @@ class PullRequestCard(QFrame):
         icon_label = QLabel()
         if self.descriptor.has_issues:
             icon = QApplication.style().standardIcon(QStyle.SP_MessageBoxWarning)
+        elif self.descriptor.is_ready_to_merge:
+            icon = QApplication.style().standardIcon(QStyle.SP_DialogYesButton)
         else:
             icon = QApplication.style().standardIcon(QStyle.SP_FileDialogDetailedView)
         icon_label.setPixmap(icon.pixmap(48, 48))
