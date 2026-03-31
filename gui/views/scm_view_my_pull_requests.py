@@ -3,10 +3,10 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 
 from core.scm_model_my_pull_requests import ScmModelMyPullRequests
+from .abstract_view import AbstractView
 
 
-
-class ScmViewMyPullRequests(QWidget):
+class ScmViewMyPullRequests(AbstractView, QWidget):
     def __init__(self):
         super().__init__()
         layout = QVBoxLayout()
@@ -22,6 +22,10 @@ class ScmViewMyPullRequests(QWidget):
         layout.addWidget(self.list_widget)
 
         self.setLayout(layout)
+
+    @property
+    def best_models(self) -> list[type]:
+        return [ScmModelMyPullRequests]
 
     def refresh(self, model: ScmModelMyPullRequests):
         self.label.setText(model.title)

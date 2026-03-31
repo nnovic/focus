@@ -3,13 +3,10 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 
 from core.focus_app import FocusApp
-from core.scm_model_my_pull_requests import ScmModelMyPullRequests
-from sources.gitlab.gitlab_models import GitlabModelMyPullRequests
-from sources.gitlab.gitlab_source import GitlabSource
 
 
 from .carousel import Carousel
-from .views import ScmViewMyPullRequests
+from . import views
 
 
 class MainWindow(QMainWindow):
@@ -24,16 +21,21 @@ class MainWindow(QMainWindow):
         hello.setAlignment(Qt.AlignCenter)
         hello.setFont(QFont("Arial", 24))
 
-        cfg = self.__app.config.get_source_config("1")
-        gl = GitlabSource()
-        gl.configure(cfg)
-        gl.connect()
-        gl.refresh()
-
-        model = gl.get_model(ScmModelMyPullRequests)
-
-        gitlab = ScmViewMyPullRequests()
-        gitlab.refresh(model)
-
-        carousel = Carousel([hello, gitlab])
+        carousel = Carousel([hello])
         self.setCentralWidget(carousel)
+
+        # Add views from config
+        for view_id, view_cfg in self.__app.config.views.items():
+            src = self.__app.get_source(view_cfg.source_id)
+            src.refresh()
+
+            view_class = getattr(views, view_cfg.class_name)
+            view = view_class()
+
+            # Try each preferred model type until one is available
+            for model_class in view.best_models:
+                model = src.get_model(model_class)
+                if model is not None:
+                    view.refresh(model)
+                    carousel.add_page(view)
+                    break

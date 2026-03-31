@@ -90,6 +90,21 @@ class Carousel(QWidget):
         # Keep references alive until animation finishes
         self._anims = (anim_out, anim_in)
 
+    def add_page(self, page: QWidget):
+        """Add a page to the carousel after creation."""
+        self._pages.append(page)
+        self._stack.addWidget(page)
+
+        # Add a new dot indicator
+        dot = QLabel("●")
+        dot.setAlignment(Qt.AlignCenter)
+        self._dots.append(dot)
+        # Find the dots layout and add the new dot
+        dots_layout = self.layout().itemAt(1).layout()
+        dots_layout.addWidget(dot)
+
+        self._update_ui()
+
     def _update_ui(self):
         self._btn_prev.setEnabled(self._current > 0)
         self._btn_next.setEnabled(self._current < len(self._pages) - 1)
