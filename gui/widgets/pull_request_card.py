@@ -23,9 +23,12 @@ class PullRequestCard(QFrame):
         layout.setSpacing(15)
         layout.setContentsMargins(10, 10, 10, 10)
 
-        # Icon
+        # Icon - choose based on PR status
         icon_label = QLabel()
-        icon = QApplication.style().standardIcon(QStyle.SP_FileDialogDetailedView)
+        if self.descriptor.has_issues:
+            icon = QApplication.style().standardIcon(QStyle.SP_MessageBoxWarning)
+        else:
+            icon = QApplication.style().standardIcon(QStyle.SP_FileDialogDetailedView)
         icon_label.setPixmap(icon.pixmap(48, 48))
         layout.addWidget(icon_label)
 
