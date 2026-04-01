@@ -35,7 +35,7 @@ class JiraSource(DataSource):
         self.__active_tickets._refresh(self.__jira)
 
     def get_model(self, type: type) -> Any:
-        if type is JiraModelMyActiveTickets:
+        if type is BtsModelMyActiveTickets:
             return self.__active_tickets
         else:
             raise NotImplementedError()

@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
 from core.abstract_model import AbstractModel
-from core.scm_pull_request_descriptor import ScmPullRequestDescriptor
+from core.bts_ticket_descriptor import BtsTicketDescriptor
 
 
 class BtsModelMyActiveTickets(AbstractModel):
@@ -10,13 +10,10 @@ class BtsModelMyActiveTickets(AbstractModel):
     def title(self) -> str:
         return "My active tickets"
 
-    # @property
-    # def pull_requests(self) -> list[ScmPullRequestDescriptor]:
-    #     pr_list = self._get_pull_requests()
+    @property
+    def tickets(self) -> list[BtsTicketDescriptor]:
+        return self._get_tickets()
 
-    #     return sorted(pr_list, key=lambda pr: pr.priority, reverse=True)
-        
-
-    # @abstractmethod
-    # def _get_pull_requests(self) -> list[ScmPullRequestDescriptor]:
-    #     raise NotImplementedError()
+    @abstractmethod
+    def _get_tickets(self) -> list[BtsTicketDescriptor]:
+        raise NotImplementedError()

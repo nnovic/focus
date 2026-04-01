@@ -24,7 +24,13 @@ class JiraTicketDescriptor(BtsTicketDescriptor):
 
     @property
     def created_at(self) -> datetime | None:
-        return datetime.fromisoformat(self.__issue.created)
+        # Handle timezone offset formatting (e.g., '+0100' -> '+01:00')
+        created_str = self.__issue.fields.created
+        if created_str and len(created_str) > 6:
+            # Insert colon in timezone offset if missing (last 5 chars)
+            if created_str[-5] in ('+', '-') and ':' not in created_str[-5:]:
+                created_str = created_str[:-2] + ':' + created_str[-2:]
+        return datetime.fromisoformat(created_str)
 
     @property
     def priority(self) -> int:
@@ -63,3 +69,7 @@ class JiraModelMyActiveTickets(BtsModelMyActiveTickets):
 
     # def _get_pull_requests(self) -> list[GenericTaskDescriptor]:
     #     return self.__list
+
+
+    def _get_tickets(self) -> list[BtsTicketDescriptor]:
+        return self.__list
