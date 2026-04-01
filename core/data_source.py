@@ -18,8 +18,8 @@ class DataSource:
             self.connect()
             self.refresh()
             while not self._stop_event.is_set():
+                self._stop_event.wait(120)  # 5 minutes
                 self.poll()
-                self._stop_event.wait(300)  # 5 minutes
         except Exception as e:
             breakpoint()
             raise
@@ -27,7 +27,7 @@ class DataSource:
             self.disconnect()
 
     def poll(self) -> None:
-        pass
+        self.refresh()
 
     def stop(self) -> None:
         self._stop_event.set()
