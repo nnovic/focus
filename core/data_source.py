@@ -41,8 +41,12 @@ class DataSource:
 
     @abstractmethod
     def refresh(self) -> None:
+        self._refresh()
+    
+    @abstractmethod
+    def _refresh(self) -> None:
         raise NotImplementedError()
-
+    
     @abstractmethod
     def get_model(self, type_hint: str) -> Any:
         raise NotImplementedError()

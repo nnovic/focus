@@ -21,7 +21,7 @@ class GitlabSource(DataSource):
         self.__gl.auth()
     
 
-    def refresh(self) -> None:
+    def _refresh(self) -> None:
         self.__refresh_my_pull_requests()
 
 
