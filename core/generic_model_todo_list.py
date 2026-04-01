@@ -13,11 +13,11 @@ class GenericModelTodoList(AbstractModel):
 
     @property
     def tasks(self) -> list[GenericTaskDescriptor]:
-        pr_list = self._get_pull_requests()
+        pr_list = self._get_tasks()
 
         return sorted(pr_list, key=lambda pr: pr.priority, reverse=True)
         
 
     @abstractmethod
-    def _get_pull_requests(self) -> list[ScmPullRequestDescriptor]:
+    def _get_tasks(self) -> list[GenericTaskDescriptor]:
         raise NotImplementedError()

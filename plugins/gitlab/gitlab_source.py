@@ -35,5 +35,10 @@ class GitlabSource(DataSource):
     def __refresh_my_todo_list(self):
         self.__my_todo_list._refresh(self.__gl)
 
-    def get_model(self, type: str) -> Any:
-        return self.__my_pull_requests
+    def get_model(self, type: type) -> Any:
+        if type is GenericModelTodoList:
+            return self.__my_todo_list
+        elif type is ScmModelMyPullRequests:
+            return self.__my_pull_requests
+        else:
+            raise NotImplementedError()

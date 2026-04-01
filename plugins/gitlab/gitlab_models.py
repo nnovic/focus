@@ -14,10 +14,11 @@ class GitlabTodoDescriptor(GenericTaskDescriptor):
 
     @property
     def title(self) -> str:
-        return f"{self.__todo.project.name} {self.__todo.state} {self.__todo.target_type}"
+        p = self.__todo.project["name"]
+        return f"{p} {self.__todo.state} {self.__todo.target_type}"
     @property
     def description(self) -> str:
-        return self.__todo.body
+        return f"{self.__todo.action_name} {self.__todo.body}"
     @property
     def url(self) -> str | None:
         return self.__todo.target_url
@@ -83,6 +84,11 @@ class GitlabModelTodoList(GenericModelTodoList):
             new_list.append(desc)
 
         self.__list = new_list
+
+
+    def _get_tasks(self) -> list[GenericTaskDescriptor]:
+        return self.__list
+
 
 
 class GitlabModelMyPullRequests(ScmModelMyPullRequests):

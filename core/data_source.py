@@ -61,7 +61,7 @@ class DataSource:
         raise NotImplementedError()
     
     @abstractmethod
-    def get_model(self, type_hint: str) -> Any:
+    def get_model(self, type: type) -> Any:
         raise NotImplementedError()
 
     @abstractmethod
