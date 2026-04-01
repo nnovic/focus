@@ -67,6 +67,7 @@ class ScmPullRequestDescriptor:
         return -1
 
 
+
 def _evaluate_base_priority(desc: ScmPullRequestDescriptor) -> int:
     prio = 0
     if __is_too_old(desc):
