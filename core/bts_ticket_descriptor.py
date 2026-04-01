@@ -2,13 +2,14 @@ from typing import Any, Final
 from datetime import datetime
 
 
-# class ScmPullRequestPriority:
+class BtsTicketPriority:
 #     READY_TO_MERGE_AND_UPVOTED: Final[int] = 90
 #     READY_TO_MERGE: Final[int] = 80
 #     IS_UPVOTED: Final[int] = 70
-#     HAS_ISSUES: Final[int] = 60
-#     DEFAULT: Final[int] = 50
-#     IS_TOO_OLD: Final[int] = 40
+    IN_PROGRESS: Final[int] = 70
+    TO_DO: Final[int] = 50
+    BLOCKED: Final[int] = 30
+    DONE: Final[int] = 10
 
 
 class BtsTicketDescriptor:
@@ -36,8 +37,20 @@ class BtsTicketDescriptor:
     def url(self) -> str | None:
         return None
 
-    # @property
-    # def priority(self) -> int:
+    @property
+    def is_done(self) -> bool:
+        return False
+    
+    @property
+    def is_blocked(self):
+        return False
+    
+    @property
+    def is_in_progress(self):
+        return False
+
+    @property
+    def priority(self) -> int:
     #     """
     #     Priorities to ponder:
     #     - MR that can be merged
@@ -47,12 +60,12 @@ class BtsTicketDescriptor:
     #     - MR getting old
     #     - MR with no upvotes
     #     """
-    #     prio = _evaluate_base_priority(self)
-    #     if prio < 0:
-    #         prio = 0
-    #     if prio > 100:
-    #         prio = 100
-    #     return prio
+        prio = _evaluate_base_priority(self)
+        if prio < 0:
+            prio = 0
+        if prio > 100:
+            prio = 100
+        return prio
 
     # @property
     # def is_ready_to_merge(self) -> bool | None:
@@ -67,12 +80,14 @@ class BtsTicketDescriptor:
     #     return -1
 
     
-# def _evaluate_base_priority(desc: ScmPullRequestDescriptor) -> int:
-#     prio = 0
-#     if __is_too_old(desc):
-#         prio = ScmPullRequestPriority.IS_TOO_OLD
-#     elif desc.has_issues:
-#         prio = ScmPullRequestPriority.HAS_ISSUES
+def _evaluate_base_priority(desc: BtsTicketDescriptor) -> int:
+    prio = 0
+    if desc.is_done:
+        prio = BtsTicketPriority.DONE
+    if desc.is_blocked:
+        prio = BtsTicketPriority.BLOCKED
+    elif desc.is_in_progress:
+        prio = BtsTicketPriority.IN_PROGRESS
 #     elif desc.is_ready_to_merge:
 #         if desc.upvotes > 0:
 #             prio = ScmPullRequestPriority.READY_TO_MERGE_AND_UPVOTED
@@ -80,10 +95,10 @@ class BtsTicketDescriptor:
 #             prio = ScmPullRequestPriority.READY_TO_MERGE
 #     elif desc.upvotes > 0:
 #         prio = ScmPullRequestPriority.IS_UPVOTED
-#     else:
-#         prio = ScmPullRequestPriority.DEFAULT
+    else:
+        prio = BtsTicketPriority.TO_DO
 #     prio += __fine_tune_priority_by_age(desc)
-#     return prio
+    return prio
 
 
 # def __fine_tune_priority_by_age(desc: ScmPullRequestDescriptor) -> int:

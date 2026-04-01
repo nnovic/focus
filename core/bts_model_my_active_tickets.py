@@ -12,7 +12,8 @@ class BtsModelMyActiveTickets(AbstractModel):
 
     @property
     def tickets(self) -> list[BtsTicketDescriptor]:
-        return self._get_tickets()
+        tickets_list = self._get_tickets()
+        return sorted(tickets_list, key=lambda ticket: ticket.priority, reverse=True)
 
     @abstractmethod
     def _get_tickets(self) -> list[BtsTicketDescriptor]:

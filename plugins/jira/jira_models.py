@@ -31,20 +31,27 @@ class JiraTicketDescriptor(BtsTicketDescriptor):
             if created_str[-5] in ('+', '-') and ':' not in created_str[-5:]:
                 created_str = created_str[:-2] + ':' + created_str[-2:]
         return datetime.fromisoformat(created_str)
-
+    
     @property
-    def priority(self) -> int:
-    #     """Return priority based on Jira priority field."""
-    #     priority_map = {
-    #         "Highest": 100,
-    #         "High": 80,
-    #         "Medium": 60,
-    #         "Low": 40,
-    #         "Lowest": 20,
-    #     }
-    #     priority_name = self.__issue.fields.priority.name if self.__issue.fields.priority else "Medium"
-    #    return priority_map.get(priority_name, 50)
-        return self.__issue.fields.priority
+    def is_done(self) -> bool:
+        done_ids = ['10011']
+        is_done = self.__issue.fields.status.id in done_ids
+        return is_done
+
+    
+    @property
+    def is_blocked(self):
+        blocked_ids = ['10003', '10015']
+        is_blocked = self.__issue.fields.status.id in blocked_ids
+        return is_blocked
+    
+    @property
+    def is_in_progress(self):
+        in_progress_ids = ['3']
+        is_progress = self.__issue.fields.status.id in in_progress_ids
+        return is_progress
+
+
 
 
 class JiraModelMyActiveTickets(BtsModelMyActiveTickets):
