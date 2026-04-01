@@ -68,27 +68,24 @@ class PullRequestCard(QFrame):
         layout.setSpacing(15)
         layout.setContentsMargins(10, 10, 10, 10)
 
-        # Icon container with upvotes badge
+        # Icon container with upvotes badge (layered)
         icon_container = QFrame()
         icon_container.setFixedSize(64, 64)
-        icon_container_layout = QHBoxLayout()
-        icon_container_layout.setContentsMargins(0, 0, 0, 0)
 
         # Icon - choose based on PR status
-        icon_label = QLabel()
+        icon_label = QLabel(icon_container)
         icon = self._get_icon()
         icon_label.setPixmap(icon.pixmap(48, 48))
-        icon_container_layout.addWidget(icon_label)
-        icon_container.setLayout(icon_container_layout)
+        icon_label.setGeometry(8, 8, 48, 48)
 
-        # Add upvotes badge if >= 1
+        # Add upvotes badge if >= 1 (on top layer)
         if self.descriptor.upvotes >= 1:
-            upvotes_badge = QLabel()
+            upvotes_badge = QLabel(icon_container)
             upvotes_badge.setText(f"👍 {self.descriptor.upvotes}")
             upvotes_badge.setFont(QFont("Arial", 9, QFont.Bold))
             upvotes_badge.setStyleSheet("background-color: #FFD700; border-radius: 6px; padding: 2px 4px;")
             upvotes_badge.setAlignment(Qt.AlignCenter)
-            icon_container_layout.addWidget(upvotes_badge, alignment=Qt.AlignRight | Qt.AlignBottom)
+            upvotes_badge.setGeometry(32, 40, 32, 20)
 
         layout.addWidget(icon_container)
 
