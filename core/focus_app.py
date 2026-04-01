@@ -45,4 +45,4 @@ class FocusApp:
     def start(self):
         for id in self.__sources:
             source = self.__sources[id]
-            source.connect()
+            source.start()
