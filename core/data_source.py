@@ -5,9 +5,11 @@ from typing import Any
 
 class DataSource:
 
+    def __init__(self) -> None:
+        self.__refresh_callbacks = []
+        self._stop_event = threading.Event()
 
     def start(self) -> None:
-        self._stop_event = threading.Event()
         thread = threading.Thread(target=self._run, daemon=True)
         thread.start()
 
@@ -30,6 +32,13 @@ class DataSource:
     def stop(self) -> None:
         self._stop_event.set()
 
+    def on_refresh(self, callback) -> None:
+        self.__refresh_callbacks.append(callback)
+
+    def __emit_refresh(self) -> None:
+        for callback in self.__refresh_callbacks:
+            callback()
+
     @abstractmethod
     def connect(self) -> None:
         raise NotImplementedError()
@@ -39,9 +48,9 @@ class DataSource:
         raise NotImplementedError()
 
 
-    @abstractmethod
     def refresh(self) -> None:
         self._refresh()
+        self.__emit_refresh()
     
     @abstractmethod
     def _refresh(self) -> None:

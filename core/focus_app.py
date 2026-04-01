@@ -29,7 +29,14 @@ class FocusApp:
             source = source_class()
             source.configure(config)
 
-            self.__sources[id] = source
+            self.__register_source(id, source)
+
+    def __register_source(self, id, source):
+        self.__sources[id] = source
+        source.on_refresh(lambda: self.__on_source_refresh(id))
+
+    def __on_source_refresh(self, source_id):
+        pass
 
     @property
     def config(self) -> focus_config.FocusConfig:
