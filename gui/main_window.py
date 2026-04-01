@@ -34,6 +34,7 @@ class MainWindow(QMainWindow):
             view.source_id = view_cfg.source_id
 
             carousel.add_view(view)
+            self.__app.register_view(view_id, view)
 
         # # Refresh sources
         # for src_id in self.__app.sources:
@@ -52,4 +53,3 @@ class MainWindow(QMainWindow):
         #             view.refresh(model)
         #             break
 
-        pass

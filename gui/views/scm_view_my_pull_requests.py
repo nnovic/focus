@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QScrollArea
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QFont
 
 from core.scm_model_my_pull_requests import ScmModelMyPullRequests
@@ -10,8 +10,11 @@ from .abstract_view import AbstractView
 
 
 class ScmViewMyPullRequests(ConcreteView):
+    refresh_signal = pyqtSignal(object)
+
     def __init__(self):
         super().__init__()
+        self.refresh_signal.connect(self._on_refresh)
         main_layout = QVBoxLayout()
 
         # Title label
@@ -40,6 +43,10 @@ class ScmViewMyPullRequests(ConcreteView):
         return [ScmModelMyPullRequests]
 
     def refresh(self, model: ScmModelMyPullRequests):
+        self.refresh_signal.emit(model)
+
+    def _on_refresh(self, model: ScmModelMyPullRequests):
+        print(f"ScmViewMyPullRequests.refresh called with {len(model.pull_requests)} PRs")
         self.label.setText(model.title)
 
         # Clear flow layout
@@ -50,6 +57,12 @@ class ScmViewMyPullRequests(ConcreteView):
 
         # Add cards to flow layout
         for desc in model.pull_requests:
+            print(f"Adding card for {desc}")
             card = PullRequestCard(desc)
             card.setFixedSize(400, 100)
             self.flow_layout.addWidget(card)
+            print(f"Flow layout now has {self.flow_layout.count()} items")
+
+        self.flow_layout.update()
+        self.flow_container.update()
+        self.scroll_area.viewport().update()

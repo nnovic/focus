@@ -37,7 +37,11 @@ class DataSource:
 
     def __emit_refresh(self) -> None:
         for callback in self.__refresh_callbacks:
-            callback()
+            try:
+                callback()
+            except Exception as e:
+                breakpoint()
+                raise
 
     @abstractmethod
     def connect(self) -> None:

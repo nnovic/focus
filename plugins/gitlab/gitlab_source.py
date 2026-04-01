@@ -8,6 +8,7 @@ from plugins.gitlab.gitlab_models import GitlabModelMyPullRequests
 class GitlabSource(DataSource):
 
     def __init__(self):
+        super().__init__()
         self.__gl = None
         self.__my_pull_requests = GitlabModelMyPullRequests()
         self.__config = None

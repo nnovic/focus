@@ -9,6 +9,7 @@ class FocusApp:
 
     def __init__(self):
         self.__sources = {}
+        self.__views = {}
         self.__load_config()
         self.__create_sources()
 
@@ -36,7 +37,18 @@ class FocusApp:
         source.on_refresh(lambda: self.__on_source_refresh(id))
 
     def __on_source_refresh(self, source_id):
-        pass
+        src = self.__sources[source_id]
+
+        for view in self.__views.values():
+            if view.source_id != source_id:
+                continue
+            # Try each preferred model type until one is available
+            for model_class in view.best_models:
+                model = src.get_model(model_class)
+                if model is not None:
+                    view.refresh(model)
+                    break
+
 
     @property
     def config(self) -> focus_config.FocusConfig:
@@ -48,6 +60,9 @@ class FocusApp:
     @property
     def sources(self) -> list[str]:
         return list(self.__sources.keys())
+
+    def register_view(self, view_id, view):
+        self.__views[view_id] = view
 
     def start(self):
         for id in self.__sources:

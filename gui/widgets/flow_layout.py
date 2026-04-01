@@ -37,18 +37,12 @@ class FlowLayout(QLayout):
         self.doLayout(rect.topLeft(), rect.width(), False)
 
     def sizeHint(self):
-        size = self.minimumSize()
-        return size
+        return self.minimumSize()
 
     def minimumSize(self):
-        size = QSize()
-        for item in self.items:
-            widget = item.widget()
-            if widget:
-                size = size.expandedTo(widget.minimumSizeHint())
+        size = self.doLayout(QPoint(0, 0), 800, True)
         margins = self.contentsMargins()
-        size += QSize(margins.left() + margins.right(), margins.top() + margins.bottom())
-        return size
+        return QSize(800, size + margins.top() + margins.bottom())
 
     def doLayout(self, position, width, test_only):
         x = position.x() + self.contentsMargins().left()
