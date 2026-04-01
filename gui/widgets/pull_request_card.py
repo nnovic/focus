@@ -23,6 +23,15 @@ class PullRequestCard(QFrame):
         else:
             return "white"
 
+    def _get_icon(self):
+        """Get the icon based on PR status."""
+        if self.descriptor.has_issues:
+            return QApplication.style().standardIcon(QStyle.SP_MessageBoxWarning)
+        elif self.descriptor.is_ready_to_merge:
+            return QApplication.style().standardIcon(QStyle.SP_DialogYesButton)
+        else:
+            return QApplication.style().standardIcon(QStyle.SP_FileDialogDetailedView)
+
     def _update_style(self, hovered: bool = False):
         """Update the card style based on hover state."""
         bg_color = self._bg_color
@@ -67,12 +76,7 @@ class PullRequestCard(QFrame):
 
         # Icon - choose based on PR status
         icon_label = QLabel()
-        if self.descriptor.has_issues:
-            icon = QApplication.style().standardIcon(QStyle.SP_MessageBoxWarning)
-        elif self.descriptor.is_ready_to_merge:
-            icon = QApplication.style().standardIcon(QStyle.SP_DialogYesButton)
-        else:
-            icon = QApplication.style().standardIcon(QStyle.SP_FileDialogDetailedView)
+        icon = self._get_icon()
         icon_label.setPixmap(icon.pixmap(48, 48))
         icon_container_layout.addWidget(icon_label)
         icon_container.setLayout(icon_container_layout)
