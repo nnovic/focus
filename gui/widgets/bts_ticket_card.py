@@ -14,6 +14,16 @@ class BtsTicketCard(QFrame):
         self.setCursor(QCursor(Qt.PointingHandCursor))
         self._init_ui()
 
+    def _get_icon(self):
+        """Get the icon based on the descriptor."""
+        if self.descriptor.is_done:
+            return QApplication.style().standardIcon(QStyle.SP_ArrowUp)
+        if self.descriptor.is_blocked:
+            return QApplication.style().standardIcon(QStyle.SP_ArrowDown)
+        if self.descriptor.is_in_progress:
+            return QApplication.style().standardIcon(QStyle.SP_ArrowLeft)
+        return QApplication.style().standardIcon(QStyle.SP_FileDialogDetailedView)
+
     def _update_style(self, hovered: bool = False):
         """Update the card style based on hover state."""
         bg_color = self._bg_color
@@ -47,28 +57,11 @@ class BtsTicketCard(QFrame):
         layout.setSpacing(15)
         layout.setContentsMargins(10, 10, 10, 10)
 
-        # Icon container with ticket badge
-        icon_container = QFrame()
-        icon_container.setFixedSize(64, 64)
-        icon_container_layout = QHBoxLayout()
-        icon_container_layout.setContentsMargins(0, 0, 0, 0)
-
         # Icon - ticket icon
         icon_label = QLabel()
-        icon = QApplication.style().standardIcon(QStyle.SP_FileDialogDetailedView)
+        icon = self._get_icon()
         icon_label.setPixmap(icon.pixmap(48, 48))
-        icon_container_layout.addWidget(icon_label)
-        icon_container.setLayout(icon_container_layout)
-
-        # Add UUID badge
-        uuid_badge = QLabel()
-        uuid_badge.setText(f"#{self.descriptor.uuid}")
-        uuid_badge.setFont(QFont("Arial", 9, QFont.Bold))
-        uuid_badge.setStyleSheet("background-color: #E3F2FD; border-radius: 4px; padding: 2px 4px;")
-        uuid_badge.setAlignment(Qt.AlignCenter)
-        icon_container_layout.addWidget(uuid_badge, alignment=Qt.AlignRight | Qt.AlignBottom)
-
-        layout.addWidget(icon_container)
+        layout.addWidget(icon_label)
 
         # Right side: title and metadata
         right_layout = QVBoxLayout()
