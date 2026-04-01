@@ -3,7 +3,7 @@ from typing import Any
 from core.data_source import DataSource
 import gitlab
 
-from plugins.gitlab.gitlab_models import GitlabModelMyPullRequests
+from plugins.gitlab.gitlab_models import *
 
 class GitlabSource(DataSource):
 
@@ -11,6 +11,7 @@ class GitlabSource(DataSource):
         super().__init__()
         self.__gl = None
         self.__my_pull_requests = GitlabModelMyPullRequests()
+        self.__my_todo_list = GitlabModelTodoList()
         self.__config = None
 
     def configure(self, config: Any):
@@ -25,11 +26,14 @@ class GitlabSource(DataSource):
 
     def _refresh(self) -> None:
         self.__refresh_my_pull_requests()
+        self.__refresh_my_todo_list()
 
 
     def __refresh_my_pull_requests(self):
-        # Fetch all merge requests created by this user
         self.__my_pull_requests._refresh(self.__gl)
+
+    def __refresh_my_todo_list(self):
+        self.__my_todo_list._refresh(self.__gl)
 
     def get_model(self, type: str) -> Any:
         return self.__my_pull_requests

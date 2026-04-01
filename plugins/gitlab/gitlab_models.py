@@ -1,9 +1,26 @@
 from typing import Any
 from datetime import datetime
 
+from core.generic_model_todo_list import GenericModelTodoList
+from core.generic_task_descriptor import GenericTaskDescriptor
 from core.scm_model_my_pull_requests import ScmModelMyPullRequests
 from core.scm_pull_request_descriptor import ScmPullRequestDescriptor
 
+
+class GitlabTodoDescriptor(GenericTaskDescriptor):
+    def __init__(self, todo):
+        super().__init__()
+        self.__todo = todo
+
+    @property
+    def title(self) -> str:
+        return f"{self.__todo.project.name} {self.__todo.state} {self.__todo.target_type}"
+    @property
+    def description(self) -> str:
+        return self.__todo.body
+    @property
+    def url(self) -> str | None:
+        return self.__todo.target_url
 
 class GitlabPullRequestDescriptor(ScmPullRequestDescriptor):
 
@@ -48,6 +65,24 @@ class GitlabPullRequestDescriptor(ScmPullRequestDescriptor):
         return datetime.fromisoformat(self.__mr.created_at.replace('Z', ''))
 
 
+class GitlabModelTodoList(GenericModelTodoList):
+    def __init__(self):
+        self.__list = []
+
+    @property
+    def title(self) -> str:
+        return "My Todo list @Gitlab"
+    
+    def _refresh(self, gl):
+        tds = gl.todos.list(
+             get_all=True)
+        
+        new_list = []
+        for td in tds:
+            desc = GitlabTodoDescriptor(td)
+            new_list.append(desc)
+
+        self.__list = new_list
 
 
 class GitlabModelMyPullRequests(ScmModelMyPullRequests):
