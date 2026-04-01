@@ -47,7 +47,7 @@ class ScmPullRequestDescriptor:
         - MR getting old
         - MR with no upvotes
         """
-        prio = evaluate_priority(self)
+        prio = _evaluate_base_priority(self)
         if prio < 0:
             prio = 0
         if prio > 100:
@@ -67,7 +67,7 @@ class ScmPullRequestDescriptor:
         return -1
 
 
-def evaluate_priority(desc: ScmPullRequestDescriptor) -> int:
+def _evaluate_base_priority(desc: ScmPullRequestDescriptor) -> int:
     prio = 0
     if __is_too_old(desc):
         prio = ScmPullRequestPriority.IS_TOO_OLD
@@ -87,7 +87,13 @@ def evaluate_priority(desc: ScmPullRequestDescriptor) -> int:
 
 
 def __fine_tune_priority_by_age(desc: ScmPullRequestDescriptor) -> int:
-    return 0
+    age = desc.days_old
+    if age is None or age < 0:
+        return 0
+    elif age >= 10:
+        return 9
+    else:
+        return age
 
 def __is_too_old(desc: ScmPullRequestDescriptor) -> bool:
     if desc.days_old is None:

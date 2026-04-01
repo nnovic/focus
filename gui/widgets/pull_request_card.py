@@ -76,6 +76,13 @@ class PullRequestCard(QFrame):
             url_label.mousePressEvent = lambda _: QDesktopServices.openUrl(QUrl(self.descriptor.url))
         right_layout.addWidget(url_label)
 
+        # Add days_old information
+        if self.descriptor.days_old is not None:
+            days_old_label = QLabel(f"📅 {self.descriptor.days_old} days old")
+            days_old_label.setFont(QFont("Arial", 9))
+            days_old_label.setStyleSheet("color: #666; margin-top: 5px;")
+            right_layout.addWidget(days_old_label)
+
         right_layout.addStretch()
         layout.addLayout(right_layout, 1)
 
