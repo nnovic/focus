@@ -1,28 +1,58 @@
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QLabel, QApplication, QStyle
 from PyQt5.QtGui import QFont, QCursor, QPixmap, QPainter
-from PyQt5.QtCore import Qt, QUrl, QRect
+from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QDesktopServices
 
 from core.scm_pull_request_descriptor import ScmPullRequestDescriptor
 
 
 class PullRequestCard(QFrame):
-    """A card widget displaying a pull request with icon, title, and URL."""
-
     def __init__(self, descriptor: ScmPullRequestDescriptor):
         super().__init__()
         self.descriptor = descriptor
+        self._bg_color = self._get_background_color()
+        self.setCursor(QCursor(Qt.PointingHandCursor))
         self._init_ui()
+
+    def _get_background_color(self) -> str:
+        """Get the background color based on PR status."""
+        if self.descriptor.has_issues:
+            return "#ffebee"
+        elif self.descriptor.is_ready_to_merge:
+            return "#e8f5e9"
+        else:
+            return "white"
+
+    def _update_style(self, hovered: bool = False):
+        """Update the card style based on hover state."""
+        bg_color = self._bg_color
+        if hovered:
+            # Darken the background slightly on hover
+            opacity = "dd"
+            bg_color += opacity if len(self._bg_color) == 7 else ""
+            self.setStyleSheet(f"QFrame {{ border: 1px solid #999; border-radius: 12px; background-color: {bg_color}; }}")
+        else:
+            self.setStyleSheet(f"QFrame {{ border: 1px solid #ccc; border-radius: 12px; background-color: {bg_color}; }}")
+
+    def enterEvent(self, event):
+        """Highlight card when mouse enters."""
+        self._update_style(hovered=True)
+        super().enterEvent(event)
+
+    def leaveEvent(self, event):
+        """Remove highlight when mouse leaves."""
+        self._update_style(hovered=False)
+        super().leaveEvent(event)
+
+    def mousePressEvent(self, event):
+        """Open the PR URL in the default web browser when clicked."""
+        if self.descriptor.url:
+            QDesktopServices.openUrl(QUrl(self.descriptor.url))
+        super().mousePressEvent(event)
 
     def _init_ui(self):
         """Initialize the card UI."""
-        if self.descriptor.has_issues:
-            bg_color = "#ffebee"
-        elif self.descriptor.is_ready_to_merge:
-            bg_color = "#e8f5e9"
-        else:
-            bg_color = "white"
-        self.setStyleSheet(f"QFrame {{ border: 1px solid #ccc; border-radius: 12px; background-color: {bg_color}; }}")
+        self._update_style(hovered=False)
         self.setFixedHeight(100)
 
         layout = QHBoxLayout()
@@ -69,11 +99,8 @@ class PullRequestCard(QFrame):
 
         url_label = QLabel(self.descriptor.url or "(No URL)")
         url_label.setFont(QFont("Arial", 10))
-        url_label.setStyleSheet("color: #0066cc; text-decoration: underline;")
+        url_label.setStyleSheet("color: #0066cc;")
         url_label.setWordWrap(True)
-        url_label.setCursor(QCursor(Qt.PointingHandCursor))
-        if self.descriptor.url:
-            url_label.mousePressEvent = lambda _: QDesktopServices.openUrl(QUrl(self.descriptor.url))
         right_layout.addWidget(url_label)
 
         # Add days_old information
