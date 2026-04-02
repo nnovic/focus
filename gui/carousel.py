@@ -9,7 +9,7 @@ from gui.views.concrete_view import ConcreteView
 
 
 class Carousel(QWidget):
-    def __init__(self, pages: list[QWidget], parent=None, inactivity_timeout_ms: int = 30000, first_page_timeout_ms: int = 5000):
+    def __init__(self, pages: list[QWidget], parent=None, inactivity_timeout_ms: int = 60000, first_page_timeout_ms: int = 5000):
         super().__init__(parent)
         self._pages = pages
         self._current = 0

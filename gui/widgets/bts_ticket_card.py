@@ -17,12 +17,12 @@ class BtsTicketCard(QFrame):
     def _get_icon(self):
         """Get the icon based on the descriptor."""
         if self.descriptor.is_done:
-            return QApplication.style().standardIcon(QStyle.SP_ArrowUp)
+            return QApplication.style().standardIcon(QStyle.SP_DialogApplyButton)
         if self.descriptor.is_blocked:
-            return QApplication.style().standardIcon(QStyle.SP_ArrowDown)
+            return QApplication.style().standardIcon(QStyle.SP_MediaPause)
         if self.descriptor.is_in_progress:
-            return QApplication.style().standardIcon(QStyle.SP_ArrowLeft)
-        return QApplication.style().standardIcon(QStyle.SP_FileDialogDetailedView)
+            return QApplication.style().standardIcon(QStyle.SP_ArrowForward)
+        return QApplication.style().standardIcon(QStyle.SP_FileIcon)
 
     def _update_style(self, hovered: bool = False):
         """Update the card style based on hover state."""
