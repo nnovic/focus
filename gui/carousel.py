@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import (
     QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButton, QStackedWidget
 )
-from PyQt5.QtCore import Qt, QPropertyAnimation, QRect, QEasingCurve
+from PyQt5.QtCore import Qt, QPropertyAnimation, QRect, QEasingCurve, QTimer
 from PyQt5.QtGui import QFont
 
 from gui.views.abstract_view import AbstractView
@@ -9,10 +9,12 @@ from gui.views.concrete_view import ConcreteView
 
 
 class Carousel(QWidget):
-    def __init__(self, pages: list[QWidget], parent=None):
+    def __init__(self, pages: list[QWidget], parent=None, inactivity_timeout_ms: int = 30000, first_page_timeout_ms: int = 5000):
         super().__init__(parent)
         self._pages = pages
         self._current = 0
+        self._inactivity_timeout_ms = inactivity_timeout_ms
+        self._first_page_timeout_ms = first_page_timeout_ms
 
         # Stacked widget holds all pages
         self._stack = QStackedWidget()
@@ -29,6 +31,11 @@ class Carousel(QWidget):
 
         self._btn_prev.clicked.connect(self._go_prev)
         self._btn_next.clicked.connect(self._go_next)
+
+        # Auto-pagination timer
+        self._inactivity_timer = QTimer()
+        self._inactivity_timer.timeout.connect(self._advance_page)
+        self._inactivity_timer.start(self._first_page_timeout_ms)
 
         # Dot indicators
         self._dots: list[QLabel] = []
@@ -55,10 +62,28 @@ class Carousel(QWidget):
     def _go_prev(self):
         if self._current > 0:
             self._slide_to(self._current - 1, direction=-1)
+        self._reset_inactivity_timer()
 
     def _go_next(self):
         if self._current < len(self._pages) - 1:
             self._slide_to(self._current + 1, direction=1)
+        self._reset_inactivity_timer()
+
+    def _advance_page(self):
+        """Auto-advance to next page, wrapping to second page after the last."""
+        if self._current == len(self._pages) - 1:
+            # On last page, wrap to second page if available, else first page
+            next_index = 1 if len(self._pages) > 1 else 0
+        else:
+            next_index = self._current + 1
+        self._slide_to(next_index, direction=1)
+        self._reset_inactivity_timer()
+
+    def _reset_inactivity_timer(self):
+        """Reset the inactivity timer when user interacts."""
+        self._inactivity_timer.stop()
+        #timeout = self._first_page_timeout_ms if self._current == 0 else self._inactivity_timeout_ms
+        self._inactivity_timer.start(self._inactivity_timeout_ms)
 
     def _slide_to(self, index: int, direction: int):
         width = self._stack.width()
