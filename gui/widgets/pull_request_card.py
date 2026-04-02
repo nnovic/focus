@@ -28,9 +28,9 @@ class PullRequestCard(QFrame):
         if self.descriptor.has_issues:
             return QApplication.style().standardIcon(QStyle.SP_MessageBoxWarning)
         elif self.descriptor.is_ready_to_merge:
-            return QApplication.style().standardIcon(QStyle.SP_DialogYesButton)
+            return QApplication.style().standardIcon(QStyle.SP_DialogApplyButton)
         else:
-            return QApplication.style().standardIcon(QStyle.SP_FileDialogDetailedView)
+            return QApplication.style().standardIcon(QStyle.SP_FileIcon)
 
     def _update_style(self, hovered: bool = False):
         """Update the card style based on hover state."""
@@ -83,7 +83,7 @@ class PullRequestCard(QFrame):
             upvotes_badge = QLabel(icon_container)
             upvotes_badge.setText(f"👍 {self.descriptor.upvotes}")
             upvotes_badge.setFont(QFont("Arial", 9, QFont.Bold))
-            upvotes_badge.setStyleSheet("background-color: #FFD700; border-radius: 6px; padding: 2px 4px;")
+            upvotes_badge.setStyleSheet("background-color: #FFFFFF; border-radius: 6px; padding: 2px 4px;")
             upvotes_badge.setAlignment(Qt.AlignCenter)
             upvotes_badge.setGeometry(32, 40, 32, 20)
 

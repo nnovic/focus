@@ -53,7 +53,8 @@ class GitlabPullRequestDescriptor(ScmPullRequestDescriptor):
         is_down_voted = self.__mr.downvotes > 0
         has_conflicts = self.__mr.has_conflicts
         needs_rebase = self.__mr.detailed_merge_status == 'needs_rebase'
-        return has_open_discussions or is_down_voted or has_conflicts or needs_rebase
+        cannot_be_merged = self.__mr.merge_status != 'can_be_merged'
+        return has_open_discussions or is_down_voted or has_conflicts or needs_rebase or cannot_be_merged
 
     @property
     def upvotes(self) -> int:
