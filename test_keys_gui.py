@@ -85,10 +85,13 @@ class KeyringGUI:
 
     def _get_app(self):
         """Get or create the QApplication instance."""
-        if QApplication.instance():
-            return QApplication.instance()
-        else:
-            return QApplication(sys.argv)
+        app = QApplication.instance()
+        if app is None:
+            # Only create QApplication in the main thread
+            import threading
+            if threading.current_thread() is threading.main_thread():
+                app = QApplication(sys.argv)
+        return app
 
     def _try_unlock_keyring(self):
         """
@@ -184,6 +187,11 @@ print(pwd if pwd else '')
                 attempt_num = attempt + 1
                 print(f"\n🔒 Keyring is blocked. Showing GUI popup (attempt {attempt_num}/{max_retries})...")
 
+                app = self._get_app()
+                if app is None:
+                    print("⚠ Cannot show GUI (not in main thread), skipping this attempt...")
+                    continue
+
                 dialog = KeyringPasswordDialog()
                 if dialog.exec_() != QDialog.Accepted:
                     print("❌ Unlock cancelled")
@@ -249,6 +257,11 @@ print(pwd if pwd else '')
             if thread.is_alive():
                 attempt_num = attempt + 1
                 print(f"\n🔒 Keyring is blocked. Showing GUI popup (attempt {attempt_num}/{max_retries})...")
+
+                app = self._get_app()
+                if app is None:
+                    print("⚠ Cannot show GUI (not in main thread), skipping this attempt...")
+                    continue
 
                 dialog = KeyringPasswordDialog()
                 if dialog.exec_() != QDialog.Accepted:
