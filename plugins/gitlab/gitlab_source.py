@@ -21,7 +21,11 @@ class GitlabSource(DataSource):
         self.__gl = gitlab.Gitlab("https://gitlab.com",
                        private_token=self.__config.token)
         self.__gl.auth()
-    
+        
+    def disconnect(self) -> None:
+        """Close the GitLab connection."""
+        if self.__gl is not None:
+            self.__gl = None
 
 
     def _refresh(self) -> None:
