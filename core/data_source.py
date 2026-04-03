@@ -65,11 +65,25 @@ class DataSource:
                 raise
 
     def connect(self) -> None:
-        self._connect()
-        self.__connected = True
+        """
+        raise ConnectionError in case of broken connection
+        raise ConnectionAbortedError()
+        raise ConnectionRefusedError
+        """
+        try:
+            self._connect()
+            self.__connected = True
+        except Exception as e:
+            breakpoint()
+            raise
 
     @abstractmethod
     def _connect(self) -> None:
+        """
+        raise ConnectionError in case of broken connection
+        raise ConnectionAbortedError()
+        raise ConnectionRefusedError
+        """
         raise NotImplementedError()
 
     def disconnect(self) -> None:
@@ -98,5 +112,5 @@ class DataSource:
     def configure(self, config: Any):
         raise NotImplementedError()
 
-    def _prompt_user_for(self, credentials: dict):
-        pass
+    def decorate(self, service_name: str) -> str:
+        return "focus_" + self.__class__.__name__ + "__" + service_name
