@@ -6,7 +6,7 @@ import os
 # Add parent directory to path so we can import test_keys_gui
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from test_keys_gui import get_password, ensure_keyring_unlocked
+from test_keys_gui import get_password
 
 
 class SecretsManager:
@@ -19,8 +19,7 @@ class SecretsManager:
 class KeyringSecretsManager(SecretsManager):
 
     def __init__(self):
-        # Unlock keyring on first use with GUI dialog if needed
-        ensure_keyring_unlocked()
+        pass
 
     def get_secret(self, service_name: str, username: str) -> str:
         """

@@ -139,45 +139,6 @@ print(pwd if pwd else '')
         except Exception:
             return None
 
-    def ensure_keyring_unlocked(self):
-        """
-        Ensure keyring is unlocked by prompting user if necessary.
-        Call this once at the start of your application.
-        """
-        if self._keyring_unlocked:
-            return True
-
-        max_retries = 3
-        for attempt in range(max_retries):
-            try:
-                # Try to access keyring - if it works, we're good
-                keyring.get_password("_ensure_unlocked", "_test")
-                self._keyring_unlocked = True
-                print("✓ Keyring is unlocked")
-                return True
-            except Exception as e:
-                # Show GUI dialog
-                print(f"\n🔒 Keyring is locked. Showing GUI popup (attempt {attempt + 1}/{max_retries})...")
-
-                dialog = KeyringPasswordDialog()
-                if dialog.exec_() != QDialog.Accepted:
-                    print("❌ Keyring unlock cancelled")
-                    return False
-
-                # User entered password - use it to unlock
-                password = dialog.password
-                print("🔓 Unlocking keyring with password...")
-                if self._unlock_with_password(password):
-                    self._keyring_unlocked = True
-                    print("✓ Keyring is unlocked")
-                    return True
-                else:
-                    print("❌ Password incorrect or unlock failed")
-                    continue
-
-        print("❌ Failed to unlock keyring")
-        return False
-
     def get_password_with_gui(
         self, service: str, username: str
     ) -> Optional[str]:
@@ -315,11 +276,6 @@ def get_keyring_gui():
     if _gui_instance is None:
         _gui_instance = KeyringGUI()
     return _gui_instance
-
-
-def ensure_keyring_unlocked():
-    """Unlock keyring with GUI if necessary. Call this at app startup."""
-    return get_keyring_gui().ensure_keyring_unlocked()
 
 
 def get_password(service: str, username: str) -> Optional[str]:
