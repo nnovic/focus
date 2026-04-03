@@ -16,7 +16,7 @@ class DataSource:
     def __reconnection_loop(self) -> None:
         while not self._stop_event.is_set():
             try:
-                    self.__connection_loop()
+                self.__connection_loop()
             except ConnectionError as e:
                 continue
 
