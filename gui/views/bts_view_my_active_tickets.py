@@ -57,11 +57,9 @@ class BtsViewMyActiveTickets(ConcreteView):
 
         # Add cards to flow layout
         for desc in model.tickets:
-            print(f"Adding ticket card for {desc}")
             card = BtsTicketCard(desc)
             card.setFixedSize(400, 100)
             self.flow_layout.addWidget(card)
-            print(f"Flow layout now has {self.flow_layout.count()} items")
 
         self.flow_layout.update()
         self.flow_container.update()

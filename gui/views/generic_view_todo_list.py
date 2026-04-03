@@ -57,11 +57,9 @@ class GenericViewTodoList(ConcreteView):
 
         # Add cards to flow layout
         for desc in model.tasks:
-            print(f"Adding card for {desc}")
             card = TaskCard(desc)
             card.setFixedSize(400, 100)
             self.flow_layout.addWidget(card)
-            print(f"Flow layout now has {self.flow_layout.count()} items")
 
         self.flow_layout.update()
         self.flow_container.update()
