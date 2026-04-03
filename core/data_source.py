@@ -10,15 +10,23 @@ class DataSource:
         self._stop_event = threading.Event()
 
     def start(self) -> None:
-        thread = threading.Thread(target=self._run, daemon=True)
+        thread = threading.Thread(target=self.__reconnection_loop, daemon=True)
         thread.start()
 
-    def _run(self) -> None:
+    def __reconnection_loop(self) -> None:
+        while not self._stop_event.is_set():
+            try:
+                    self.__connection_loop()
+            except ConnectionError as e:
+                continue
+
+
+    def __connection_loop(self) -> None:
         try:
             self.connect()
             self.refresh()
             while not self._stop_event.is_set():
-                self._stop_event.wait(120)  # 5 minutes
+                self._stop_event.wait(120)  # 2 minutes
                 self.poll()
         except Exception as e:
             breakpoint()
