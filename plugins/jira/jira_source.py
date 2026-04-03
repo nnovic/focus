@@ -17,7 +17,7 @@ class JiraSource(DataSource):
     def configure(self, config: Any):
         self.__config = config
 
-    def connect(self) -> None:
+    def _connect(self) -> None:
         self.__jira = JIRA(
             server=self.__config.server,
             basic_auth=(self.__config.username, self.__config.token)

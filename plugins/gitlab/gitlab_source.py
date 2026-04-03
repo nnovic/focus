@@ -17,12 +17,12 @@ class GitlabSource(DataSource):
     def configure(self, config: Any):
         self.__config = config
 
-    def connect(self) -> None:
+    def _connect(self) -> None:
         self.__gl = gitlab.Gitlab("https://gitlab.com",
                        private_token=self.__config.token)
         self.__gl.auth()
         
-    def disconnect(self) -> None:
+    def _disconnect(self) -> None:
         """Close the GitLab connection."""
         if self.__gl is not None:
             self.__gl = None
