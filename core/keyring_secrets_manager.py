@@ -183,7 +183,13 @@ class QtSecretsFrontend(SecretsFrontend):
             return None
 
         dialog = KeyringPasswordDialog()
-        if dialog.exec_() != QDialog.Accepted:
+        # Process events before showing dialog to keep UI responsive
+        app.processEvents()
+        result = dialog.exec_()
+        # Process events again after dialog closes
+        app.processEvents()
+
+        if result != QDialog.Accepted:
             print("❌ Unlock cancelled")
             return None
 
@@ -241,7 +247,8 @@ class KeyringPasswordDialog(QDialog):
         if not self.password:
             QMessageBox.warning(self, "Error", "Password cannot be empty")
             return
-        self.accept()
+        # Use done() instead of accept() to avoid potential blocking issues
+        self.done(QDialog.Accepted)
 
 
 
@@ -251,25 +258,25 @@ class KeyringPasswordDialog(QDialog):
 
 
 
-class KeyringSecretsManager(SecretsManager):
+# class KeyringSecretsManager(SecretsManager):
 
-    def __init__(self, ):
-        pass
+#     def __init__(self, ):
+#         pass
 
-    def get_secret(self, service_name: str, username: str) -> str:
-        """
-        Get a secret from the system keyring.
+#     def get_secret(self, service_name: str, username: str) -> str:
+#         """
+#         Get a secret from the system keyring.
 
-        Keyring is unlocked on first use via __init__.
-        """
-        try:
-            pwd = get_password(service_name, username)
-            if pwd is None:
-                raise ValueError(f"No password stored for {service_name}/{username}")
-            return pwd
-        except Exception as e:
-            print(f"\n❌ ERROR: Failed to retrieve secret from keyring")
-            print(f"   Service: {service_name}")
-            print(f"   Username: {username}")
-            print(f"   Error: {type(e).__name__}: {e}")
-            raise
+#         Keyring is unlocked on first use via __init__.
+#         """
+#         try:
+#             pwd = get_password(service_name, username)
+#             if pwd is None:
+#                 raise ValueError(f"No password stored for {service_name}/{username}")
+#             return pwd
+#         except Exception as e:
+#             print(f"\n❌ ERROR: Failed to retrieve secret from keyring")
+#             print(f"   Service: {service_name}")
+#             print(f"   Username: {username}")
+#             print(f"   Error: {type(e).__name__}: {e}")
+#             raise
