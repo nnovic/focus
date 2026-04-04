@@ -2,7 +2,8 @@ import sys
 from PyQt5.QtWidgets import QApplication
 
 from core.focus_app import FocusApp
-from core.keyring_secrets_manager import *
+from core.keyring_secrets_backend import KeyringSecretsBackend
+from gui.qt_secrets_frontend import QtSecretsFrontend
 from gui import MainWindow
 
 
