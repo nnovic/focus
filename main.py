@@ -2,14 +2,16 @@ import sys
 from PyQt5.QtWidgets import QApplication
 
 from core.focus_app import FocusApp
-from core.keyring_secrets_manager import KeyringSecretsManager
+from core.keyring_secrets_manager import *
 from gui import MainWindow
 
 
 def main():
     from core import secrets_manager as sm_module
-    sm_module.secrets_manager = KeyringSecretsManager()
-
+    #sm_module.secrets_manager = KeyringSecretsManager()
+    sm_module.secrets_manager.set_backend( KeyringSecretsBackend() )
+    sm_module.secrets_manager.set_frontend(QtSecretsFrontend())
+    
     qapp = QApplication(sys.argv)
     focus_app = FocusApp()
     focus_app.start()
