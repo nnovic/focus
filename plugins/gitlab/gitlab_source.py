@@ -36,8 +36,6 @@ class GitlabSource(DataSource):
 
     def _connect(self) -> None:
         try:
-            # self.__gl = gitlab.Gitlab(self.__server,
-            #                private_token=self.__config.token)
             token = secrets_manager.get_secret(
                 self.__service_name, self.__username)
             self.__gl = gitlab.Gitlab(self.__server,
