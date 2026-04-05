@@ -22,6 +22,11 @@ from core.secrets_manager import *
 
 class KeyringSecretsBackend(SecretsBackend):
 
+
+    def __init__(self):
+        super().__init__()
+        self.__keyring_password = None
+
     def get_secret(self, gui:SecretsFrontend, service_name: str, username: str) -> str:
         """
         Get a secret from the system keyring.
@@ -29,7 +34,7 @@ class KeyringSecretsBackend(SecretsBackend):
         Keyring is unlocked on first use via __init__.
         """
         try:
-            pwd = self.__get_password(gui, service_name, username)
+            pwd = self.__get_secret(gui, service_name, username)
             if pwd is None:
                 raise ValueError(f"No password stored for {service_name}/{username}")
             return pwd
@@ -40,7 +45,7 @@ class KeyringSecretsBackend(SecretsBackend):
             print(f"   Error: {type(e).__name__}: {e}")
             raise
 
-    def __get_password(
+    def __get_secret(
         self,gui:SecretsFrontend, service: str, username: str
     ) -> Optional[str]:
         """
@@ -85,9 +90,10 @@ class KeyringSecretsBackend(SecretsBackend):
                 attempt_num = attempt + 1
 
                 print(f"\n🔒 Keyring is blocked. Showing GUI popup (attempt {attempt_num}/{max_retries})...")
-                keyring_password = gui.prompt_user_to_unlock_safe()
+                if self.__keyring_password is None:
+                    self.__keyring_password = gui.prompt_user_to_unlock_safe()
                 # app = self._get_app()
-                if keyring_password is None:
+                if self.__keyring_password is None:
                     continue
 
                 # dialog = KeyringPasswordDialog()
@@ -100,16 +106,19 @@ class KeyringSecretsBackend(SecretsBackend):
                 print("🔓 Using password to retrieve from keyring...")
 
                 if HAS_PEXPECT:
-                    pwd = self._get_password_with_password(service, username, keyring_password)
+                    pwd = self._get_password_with_password(service, username, self.__keyring_password)
                     if pwd:
                         print(f"✓ Retrieved password for {service}/{username}")
                         return pwd
                     else:
+                        self.__keyring_password = None
                         print("❌ Password incorrect or retrieval failed")
                 else:
+                    self.__keyring_password = None
                     print("⚠ pexpect not available, retrying without password...")
                     continue
 
+        self.__keyring_password = None
         print(f"❌ Failed to retrieve password after {max_retries} attempts")
         return None
     
