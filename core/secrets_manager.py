@@ -1,5 +1,6 @@
 from abc import abstractmethod
 from typing import Any
+import threading
 
 
 class SecretsFrontend:
@@ -18,8 +19,8 @@ class SecretsBackend:
 class SecretsManager:
 
     def __init__(self):
-        pass
-    
+        self.__lock = threading.Lock()
+
     def set_backend(self, back:SecretsBackend):
         self.__backend = back
 
@@ -27,7 +28,8 @@ class SecretsManager:
         self.__frontend = front
 
     def get_secret(self, service_name: str, username: str) -> str | None:
-        return self.__backend.get_secret(self.__frontend, service_name, username)
+        with self.__lock:
+            return self.__backend.get_secret(self.__frontend, service_name, username)
 
 
 secrets_manager = SecretsManager()
