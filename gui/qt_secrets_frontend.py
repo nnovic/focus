@@ -1,7 +1,9 @@
 import sys
+import threading
 from PyQt5.QtWidgets import (
     QApplication, QDialog, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox
 )
+from PyQt5.QtCore import QTimer, QEventLoop
 from core.secrets_manager import SecretsFrontend
 
 
@@ -15,11 +17,9 @@ class QtSecretsFrontend(SecretsFrontend):
         app = QApplication.instance()
         if app is None:
             # Only create QApplication in the main thread
-            import threading
             if threading.current_thread() is threading.main_thread():
                 app = QApplication(sys.argv)
         return app
-
 
     def prompt_user_to_unlock_safe(self) -> str | None:
         app = self._get_app()
@@ -27,19 +27,37 @@ class QtSecretsFrontend(SecretsFrontend):
             print("⚠ Cannot show GUI (not in main thread), skipping this attempt...")
             return None
 
-        dialog = KeyringPasswordDialog()
-        # Process events before showing dialog to keep UI responsive
-        app.processEvents()
-        result = dialog.exec_()
-        # Process events again after dialog closes
-        app.processEvents()
+        # If we're on the main thread, show dialog directly
+        if threading.current_thread() is threading.main_thread():
+            dialog = KeyringPasswordDialog()
+            result = dialog.exec_()
+            if result != QDialog.Accepted:
+                print("❌ Unlock cancelled")
+                return None
+            return dialog.password
 
-        if result != QDialog.Accepted:
-            print("❌ Unlock cancelled")
-            return None
+        # If we're on a background thread, use a local event loop to wait for dialog
+        password_result = [None]
+        dialog_holder = [None]
+        event_loop = QEventLoop()
 
-        # User entered keyring password - use it with pexpect
-        return dialog.password
+        def show_dialog_on_main_thread():
+            dialog = KeyringPasswordDialog()
+            dialog_holder[0] = dialog
+            result = dialog.exec_()
+            if result == QDialog.Accepted:
+                password_result[0] = dialog.password
+            else:
+                print("❌ Unlock cancelled")
+            event_loop.quit()
+
+        # Schedule dialog show on main thread
+        QTimer.singleShot(0, show_dialog_on_main_thread)
+
+        # Run local event loop to process main thread events
+        event_loop.exec_()
+
+        return password_result[0]
 
 
 class KeyringPasswordDialog(QDialog):
@@ -92,5 +110,4 @@ class KeyringPasswordDialog(QDialog):
         if not self.password:
             QMessageBox.warning(self, "Error", "Password cannot be empty")
             return
-        # Use done() instead of accept() to avoid potential blocking issues
-        self.done(QDialog.Accepted)
+        self.accept()
