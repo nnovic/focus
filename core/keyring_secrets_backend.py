@@ -131,7 +131,7 @@ class KeyringSecretsBackend(SecretsBackend):
             # Use pexpect to interact with keyring
             script = f"""
 import keyring
-pwd = keyring.get_password('{service}', '{username}')
+pwd = keyring.get_password({service!r}, {username!r})
 print(pwd if pwd else '')
 """
             child = pexpect.spawn(
