@@ -1,11 +1,9 @@
-from PyQt5.QtWidgets import QMainWindow, QLabel
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import QMainWindow
 
 from core.focus_app import FocusApp
 
-
 from .carousel import Carousel
+from .views.landing_page import LandingPage
 from . import views
 
 
@@ -17,9 +15,7 @@ class MainWindow(QMainWindow):
         self.resize(500, 350)
 
         # Pages
-        hello = QLabel("Hello World")
-        hello.setAlignment(Qt.AlignCenter)
-        hello.setFont(QFont("Arial", 24))
+        hello = LandingPage()
 
         carousel = Carousel([hello])
         self.setCentralWidget(carousel)
@@ -35,21 +31,3 @@ class MainWindow(QMainWindow):
 
             carousel.add_view(view)
             self.__app.register_view(view_id, view)
-
-        # # Refresh sources
-        # for src_id in self.__app.sources:
-        #     src = self.__app.get_source(src_id)
-        #     src.refresh()
-
-        # # Refresh views
-        # for view in carousel.views:
-        #     src_id = view.source_id
-        #     src = self.__app.get_source(src_id)
-
-        #     # Try each preferred model type until one is available
-        #     for model_class in view.best_models:
-        #         model = src.get_model(model_class)
-        #         if model is not None:
-        #             view.refresh(model)
-        #             break
-
