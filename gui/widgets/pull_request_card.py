@@ -98,7 +98,7 @@ class PullRequestCard(QFrame):
         title_label.setWordWrap(True)
         right_layout.addWidget(title_label)
 
-        url_label = QLabel(self.descriptor.url or "(No URL)")
+        url_label = QLabel(self.descriptor.short_ref or "(No URL)")
         url_label.setFont(QFont("Arial", 10))
         url_label.setStyleSheet("color: #0066cc;")
         url_label.setWordWrap(True)

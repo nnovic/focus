@@ -26,11 +26,22 @@ class ScmPullRequestDescriptor:
 
     @property
     def uuid(self) -> Any:
+        """
+        A unique ID for this pull request. Not for display.
+        """
         raise NotImplementedError()
 
     @property
     def title(self) -> str:
         return "Untitle merge request"
+
+    @property
+    def short_ref(self)->str|None:
+        """
+        A reference that can be displayed a let the user
+        know exactly which pull request that is
+        """
+        return None
 
     @property
     def url(self) -> str | None:

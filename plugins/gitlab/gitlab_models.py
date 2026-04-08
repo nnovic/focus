@@ -40,7 +40,11 @@ class GitlabPullRequestDescriptor(ScmPullRequestDescriptor):
     @property
     def url(self) -> str | None:
         return self.__mr.web_url
-
+    
+    @property
+    def short_ref(self)->str|None:
+        return self.__mr.references["full"]
+    
     @property
     def is_ready_to_merge(self) -> bool | None:
         return self.__mr.detailed_merge_status == 'mergeable'
