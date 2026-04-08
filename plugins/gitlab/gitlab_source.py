@@ -1,6 +1,6 @@
 from typing import Any
 
-from core.secrets_manager import secrets_manager
+# from core.secrets_manager import secrets_manager
 from core.data_source import DataSource
 import gitlab
 
@@ -26,20 +26,20 @@ class GitlabSource(DataSource):
         except KeyError:
             return "https://gitlab.com"
 
-    @property
-    def __username(self):
-        return self.__config.username
+    # @property
+    # def __username(self):
+    #     return self.__config.username
 
-    @property
-    def __service_name(self):
-        return self.decorate(self.__server)
+    # @property
+    # def __service_name(self):
+    #     return self.decorate(self.__server)
 
     def _connect(self) -> None:
         try:
-            token = secrets_manager.get_secret(
-                self.__service_name, self.__username)
+            # token = secrets_manager.get_secret(
+            #     self.__service_name, self.__username)
             self.__gl = gitlab.Gitlab(self.__server,
-                                      private_token=token)
+                                      private_token=self.__config.token)
             self.__gl.auth()
         except gitlab.GitlabAuthenticationError as e:
             breakpoint()

@@ -1,3 +1,5 @@
 PyQt5>=5.15
 python-gitlab>=3.0
 jira>=3.10
+icalendar>=5.0
+requests>=2.28
