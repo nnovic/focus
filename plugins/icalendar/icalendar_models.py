@@ -84,8 +84,6 @@ def _get_events_range(calendar, start_date: datetime, end_date: datetime) -> lis
         else:
             pass
 
-    # Sort by start time
-    events.sort(key=lambda e: e.start_time)
     return events
 
 
@@ -106,7 +104,10 @@ class IcalendarModelToday(CalendarModelToday):
         today_start = datetime.combine(today, datetime.min.time())
         today_end = datetime.combine(today, datetime.max.time())
 
-        events = _get_events_range(ical, today_start, today_end)
+        self.__list = _get_events_range(ical, today_start, today_end)
         pass
 
 
+    def _get_events(self) -> list[CalendarEventDescriptor]:
+        return self.__list
+    

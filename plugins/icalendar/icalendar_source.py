@@ -3,6 +3,7 @@ from typing import Any
 from icalendar import Calendar
 import requests
 
+from core.calendar_model_today import CalendarModelToday
 from core.data_source import DataSource
 from plugins.icalendar.icalendar_models import IcalendarModelToday
 
@@ -50,8 +51,7 @@ class IcalendarSource(DataSource):
         self.__today._refresh(self.__calendar)
 
     def get_model(self, type: type) -> Any:
-        # if type is BtsModelMyActiveTickets:
-        #     return self.__active_tickets
-        # else:
-        #     raise NotImplementedError()
-        raise NotImplementedError()
+        if type is CalendarModelToday:
+            return self.__today
+        else:
+            raise NotImplementedError()
