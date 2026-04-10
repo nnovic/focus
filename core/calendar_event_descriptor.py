@@ -12,6 +12,10 @@ class CalendarEventDescriptor:
         raise NotImplementedError()
     
     @property
+    def end_time(self) -> datetime:
+        raise NotImplementedError()
+    
+    @property
     def duration(self) -> float|None:
         return None
     

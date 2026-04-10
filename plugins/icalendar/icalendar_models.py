@@ -32,7 +32,7 @@ class IcalendarEventDescriptor(CalendarEventDescriptor):
         return start_date_obj
     
     @property
-    def _end_time(self) -> datetime:
+    def end_time(self) -> datetime:
         dtend = self.__component.get("dtend")
         end_dt = dtend.dt
         if hasattr(end_dt, 'date'):
@@ -80,7 +80,8 @@ def _get_events_range(calendar, start_date: datetime, end_date: datetime) -> lis
             # Check if event is in the requested range
             if event.start_time.date() >= start_date.date() and event.start_time.date() <= end_date.date():
                 events.append(event)
-
+            elif event.start_time.date() < start_date.date() and event.end_time.date() >= start_date.date():
+                events.append(event)
         else:
             pass
 
