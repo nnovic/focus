@@ -7,6 +7,7 @@ from core.calendar_model_today import CalendarModelToday
 from core.data_source import DataSource
 from plugins.icalendar.icalendar_models import IcalendarModelToday
 
+
 class IcalendarSource(DataSource):
 
     def __init__(self):
@@ -26,18 +27,11 @@ class IcalendarSource(DataSource):
     #     except KeyError:
     #         return "https://atlassian.com"
 
-
     def _connect(self) -> None:
         pass
-        # self.__jira = JIRA(
-        #     server=self.__config.server,
-        #     basic_auth=(self.__config.username, self.__config.token)
-        # )
-        # # Validate connection by fetching current user
-        # try:
-        #     self.__jira.current_user()
-        # except Exception as e:
-        #     raise ConnectionError(f"Failed to connect to Jira: {str(e)}")
+
+    def _disconnect(self) -> None:
+        pass
 
     def _refresh(self) -> None:
 
