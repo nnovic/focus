@@ -14,8 +14,11 @@ class FocusApp:
         self.__create_sources()
 
     def __load_config(self):
-        self.__config = focus_config.load()
-
+        try:
+            self.__config = focus_config.load()
+        except FileNotFoundError:
+            self.__config = focus_config.FocusConfig()
+            
     def __create_sources(self):
         for id in self.__config.sources:
             config = self.__config.get_source_config(id)
