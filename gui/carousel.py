@@ -24,7 +24,8 @@ class Carousel(QWidget):
         # Navigation buttons
         self._btn_prev = QPushButton("‹")
         self._btn_next = QPushButton("›")
-        for btn in (self._btn_prev, self._btn_next):
+        self._btn_config = QPushButton("⚙", self)
+        for btn in (self._btn_prev, self._btn_next, self._btn_config):
             btn.setFixedSize(40, 40)
             btn.setFont(QFont("Arial", 20))
             btn.setCursor(Qt.PointingHandCursor)
@@ -58,6 +59,16 @@ class Carousel(QWidget):
         layout.addLayout(dots_layout)
 
         self._update_ui()
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        outer = self.layout().contentsMargins()
+        row = self.layout().itemAt(0).layout()
+        inner = row.contentsMargins()
+        right_gap = outer.right() + inner.right()
+        top_gap = outer.top() + inner.top()
+        self._btn_config.move(self.width() - self._btn_config.width() - right_gap, top_gap)
+        self._btn_config.raise_()
 
     def _go_prev(self):
         if self._current > 0:
