@@ -17,6 +17,9 @@ class CalendarEventDescriptor:
     
     @property
     def duration(self) -> float|None:
+        """
+        Returns the event duration in hours.
+        """
         return None
     
     # def __init__(self, summary: str, start: datetime, end: datetime = None, location: str = ""):
