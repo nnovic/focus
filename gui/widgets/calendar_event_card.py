@@ -44,6 +44,7 @@ class CalendarEventCard(ConcreteCard):
         super().leaveEvent(event)
 
     def minimize(self):
+        self.layout().setContentsMargins(10, 4, 10, 4)
         self.setFixedHeight(40)
 
     def _init_ui(self):
