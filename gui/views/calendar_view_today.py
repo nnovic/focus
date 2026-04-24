@@ -1,3 +1,4 @@
+from datetime import datetime
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QScrollArea
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QFont
@@ -57,7 +58,9 @@ class CalendarViewToday(ConcreteView):
         # Add cards to flow layout
         for desc in model.events:
             card = CalendarEventCard(desc)
-            card.setFixedSize(400, 100)
+            if desc.end_time.replace(tzinfo=None) < datetime.now():
+                card.minimize()
+            card.setFixedWidth(400)
             self.flow_layout.addWidget(card)
 
         self.flow_layout.update()

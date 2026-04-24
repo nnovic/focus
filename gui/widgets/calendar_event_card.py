@@ -1,16 +1,29 @@
+from datetime import datetime
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QLabel
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt, QTime
 
 from core.calendar_event_descriptor import CalendarEventDescriptor
+from gui.widgets.concrete_card import ConcreteCard
 
 
-class CalendarEventCard(QFrame):
+class CalendarEventCard(ConcreteCard):
     def __init__(self, descriptor: CalendarEventDescriptor):
         super().__init__()
         self.descriptor = descriptor
-        self._bg_color = "#f5f5f5"
+        now = datetime.now()
+        end = descriptor.end_time.replace(tzinfo=None)
+        start = descriptor.start_time.replace(tzinfo=None)
+        if end < now:
+            self._bg_color = "#e0e0e0"  # terminated: gray
+        elif start <= now <= end:
+            self._bg_color = "#bbdefb"  # in progress: blue
+        elif (start - now).total_seconds() < 15 * 60:
+            self._bg_color = "#ffe0b2"  # starting soon: orange
+        else:
+            self._bg_color = "#f5f5f5"  # upcoming: default
         self._init_ui()
+        self.setFixedHeight(100)
 
     def _update_style(self, hovered: bool = False):
         """Update the card style based on hover state."""
@@ -29,6 +42,9 @@ class CalendarEventCard(QFrame):
         """Remove highlight when mouse leaves."""
         self._update_style(hovered=False)
         super().leaveEvent(event)
+
+    def minimize(self):
+        self.setFixedHeight(40)
 
     def _init_ui(self):
         """Initialize the card UI."""
