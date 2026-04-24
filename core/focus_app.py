@@ -18,6 +18,7 @@ class FocusApp:
             self.__config = focus_config.load()
         except FileNotFoundError:
             self.__config = focus_config.FocusConfig()
+            focus_config.save(self.__config, create_subdirectories=True)
             
     def __create_sources(self):
         for id in self.__config.sources:

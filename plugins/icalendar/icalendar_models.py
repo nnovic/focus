@@ -1,6 +1,7 @@
 # from typing import Any
 from datetime import datetime, timedelta
 import math
+from dateutil.rrule import rrulestr
 
 
 from core.calendar_event_descriptor import CalendarEventDescriptor
@@ -52,6 +53,49 @@ class IcalendarEventDescriptor(CalendarEventDescriptor):
         return None
 
 
+class IcalendarOccurrenceDescriptor(IcalendarEventDescriptor):
+    """Wraps a recurring event component with a specific occurrence's start/end times."""
+    def __init__(self, component, occurrence_start: datetime, occurrence_end: datetime):
+        super().__init__(component)
+        self.__occurrence_start = occurrence_start
+        self.__occurrence_end = occurrence_end
+
+    @property
+    def start_time(self) -> datetime:
+        return self.__occurrence_start
+
+    @property
+    def end_time(self) -> datetime:
+        return self.__occurrence_end
+
+
+def _expand_recurrences(component, start_date: datetime, end_date: datetime) -> list[IcalendarOccurrenceDescriptor]:
+    dtstart = component.get("dtstart").dt
+    if not isinstance(dtstart, datetime):
+        dtstart = datetime.combine(dtstart, datetime.min.time())
+    dtstart = dtstart.replace(tzinfo=None)
+
+    dtend = component.get("dtend")
+    if dtend:
+        end_dt = dtend.dt
+        if not isinstance(end_dt, datetime):
+            end_dt = datetime.combine(end_dt, datetime.min.time())
+        duration = end_dt.replace(tzinfo=None) - dtstart
+    else:
+        duration = timedelta(0)
+
+    rrule_str = "RRULE:" + component.get("rrule").to_ical().decode()
+    rule = rrulestr(rrule_str, dtstart=dtstart, ignoretz=True)
+
+    search_start = datetime.combine(start_date.date(), datetime.min.time())
+    search_end = datetime.combine(end_date.date(), datetime.max.time())
+
+    return [
+        IcalendarOccurrenceDescriptor(component, occ, occ + duration)
+        for occ in rule.between(search_start, search_end, inc=True)
+    ]
+
+
 def _get_events_range(calendar, start_date: datetime, end_date: datetime) -> list[CalendarEventDescriptor]:
     """
     Retrieve calendar events for a date range.
@@ -75,13 +119,14 @@ def _get_events_range(calendar, start_date: datetime, end_date: datetime) -> lis
             # summary = component.get("summary", "")
             # location = component.get("location", "")
 
-            event = IcalendarEventDescriptor(component)
-
-            # Check if event is in the requested range
-            if event.start_time.date() >= start_date.date() and event.start_time.date() <= end_date.date():
-                events.append(event)
-            elif event.start_time.date() < start_date.date() and event.end_time.date() >= start_date.date():
-                events.append(event)
+            if component.get("rrule"):
+                events.extend(_expand_recurrences(component, start_date, end_date))
+            else:
+                event = IcalendarEventDescriptor(component)
+                if event.start_time.date() >= start_date.date() and event.start_time.date() <= end_date.date():
+                    events.append(event)
+                elif event.start_time.date() < start_date.date() and event.end_time.date() >= start_date.date():
+                    events.append(event)
         else:
             pass
 

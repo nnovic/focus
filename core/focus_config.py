@@ -22,6 +22,7 @@ class FocusConfig:
         return self.views[view_id]
 
 
+
 class GenericConfig:
     def __init__(self):
         self.__params = {}
@@ -138,3 +139,31 @@ def __load_view_from_xml_into_config(view_node, config):
 
 
     config.set_view_config(view_id, view_config)
+
+
+def save(cfg:FocusConfig, create_subdirectories:bool=False)->None:
+    path = "~/.focus/config.xml"
+    path = os.path.expanduser(path)
+    if create_subdirectories:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+    return save_to_file(cfg, path)
+
+def save_to_file(cfg:FocusConfig, config_file:str) ->None:
+    root = ET.Element("focus")
+    config_node = ET.SubElement(root, "config")
+    ET.SubElement(config_node, "sources")
+    ET.SubElement(config_node, "views")
+
+    __save_sources_from_config_into_xml(cfg,root)
+    __save_views_from_config_into_xml(cfg,root)
+
+    tree = ET.ElementTree(root)
+    tree.write(config_file, encoding="unicode", xml_declaration=True)
+
+
+def __save_sources_from_config_into_xml(cfg: FocusConfig, root):
+    pass
+
+
+def __save_views_from_config_into_xml(cfg: FocusConfig, root):
+    pass
