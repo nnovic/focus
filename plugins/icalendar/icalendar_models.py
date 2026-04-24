@@ -50,7 +50,8 @@ class IcalendarEventDescriptor(CalendarEventDescriptor):
     def duration(self) -> float|None:
         if self.__is_all_day:
             return math.inf
-        return None
+        delta = self.end_time - self.start_time
+        return delta.total_seconds() / 3600
 
 
 class IcalendarOccurrenceDescriptor(IcalendarEventDescriptor):

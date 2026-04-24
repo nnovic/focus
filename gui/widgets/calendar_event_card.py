@@ -22,6 +22,7 @@ class CalendarEventCard(ConcreteCard):
             self._bg_color = "#ffe0b2"  # starting soon: orange
         else:
             self._bg_color = "#f5f5f5"  # upcoming: default
+        self._duration_label = None
         self._init_ui()
         self.setFixedHeight(100)
 
@@ -44,6 +45,8 @@ class CalendarEventCard(ConcreteCard):
         super().leaveEvent(event)
 
     def minimize(self):
+        if self._duration_label:
+            self._duration_label.hide()
         self.layout().setContentsMargins(10, 4, 10, 4)
         self.setFixedHeight(40)
 
@@ -73,10 +76,10 @@ class CalendarEventCard(ConcreteCard):
 
         # Duration label if available
         if self.descriptor.duration:
-            duration_label = QLabel(f"Duration: {self.descriptor.duration:.1f} hours")
-            duration_label.setFont(QFont("Arial", 9))
-            duration_label.setStyleSheet("color: #888;")
-            right_layout.addWidget(duration_label)
+            self._duration_label = QLabel(f"Duration: {self.descriptor.duration:.1f} hours")
+            self._duration_label.setFont(QFont("Arial", 9))
+            self._duration_label.setStyleSheet("color: #888;")
+            right_layout.addWidget(self._duration_label)
 
         right_layout.addStretch()
         layout.addLayout(right_layout, 1)
