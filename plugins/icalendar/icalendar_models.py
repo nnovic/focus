@@ -12,7 +12,6 @@ def _round_date(dt) -> datetime:
     return datetime.combine(dt, datetime.min.time())
 
 
-
 class IcalendarEventDescriptor(CalendarEventDescriptor):
     def __init__(self, component):
         self.__component = component
@@ -27,35 +26,48 @@ class IcalendarEventDescriptor(CalendarEventDescriptor):
         dtstart = self.__component.get("dtstart")
         start_dt = dtstart.dt
         if hasattr(start_dt, 'date'):
-            start_date_obj = start_dt if isinstance(start_dt, datetime) else _round_date(start_dt)
+            start_date_obj = start_dt if isinstance(
+                start_dt, datetime) else _round_date(start_dt)
         else:
             start_date_obj = _round_date(start_dt)
         return start_date_obj
-    
+
     @property
     def end_time(self) -> datetime:
         dtend = self.__component.get("dtend")
         end_dt = dtend.dt
         if hasattr(end_dt, 'date'):
-            end_date_obj = end_dt if isinstance(end_dt, datetime) else _round_date(end_dt)
+            end_date_obj = end_dt if isinstance(
+                end_dt, datetime) else _round_date(end_dt)
         else:
             end_date_obj = _round_date(end_dt)
         return end_date_obj
-    
+
     @property
     def __is_all_day(self) -> bool:
         return False
-    
+
     @property
-    def duration(self) -> float|None:
+    def duration(self) -> float | None:
         if self.__is_all_day:
             return math.inf
         delta = self.end_time - self.start_time
         return delta.total_seconds() / 3600
 
+    @property
+    def location(self) -> str | None:
+        loc = self.__component.get("location", "")
+        return str(loc) if loc else None
+
+    @property
+    def url(self) -> str | None:
+        url = self.__component.get("url", "")
+        return str(url) if url else None
+
 
 class IcalendarOccurrenceDescriptor(IcalendarEventDescriptor):
     """Wraps a recurring event component with a specific occurrence's start/end times."""
+
     def __init__(self, component, occurrence_start: datetime, occurrence_end: datetime):
         super().__init__(component)
         self.__occurrence_start = occurrence_start
@@ -108,9 +120,9 @@ def _get_events_range(calendar, start_date: datetime, end_date: datetime) -> lis
     Returns:
         List of CalendarEntry objects in the date range
     """
+
     if not calendar:
         raise RuntimeError("Calendar not loaded. Call connect() first.")
-
 
     events = []
     for component in calendar.walk():
@@ -121,7 +133,8 @@ def _get_events_range(calendar, start_date: datetime, end_date: datetime) -> lis
             # location = component.get("location", "")
 
             if component.get("rrule"):
-                events.extend(_expand_recurrences(component, start_date, end_date))
+                events.extend(_expand_recurrences(
+                    component, start_date, end_date))
             else:
                 event = IcalendarEventDescriptor(component)
                 if event.start_time.date() >= start_date.date() and event.start_time.date() <= end_date.date():
@@ -132,9 +145,6 @@ def _get_events_range(calendar, start_date: datetime, end_date: datetime) -> lis
             pass
 
     return events
-
-
-
 
 
 class IcalendarModelToday(CalendarModelToday):
@@ -154,7 +164,5 @@ class IcalendarModelToday(CalendarModelToday):
         self.__list = _get_events_range(ical, today_start, today_end)
         pass
 
-
     def _get_events(self) -> list[CalendarEventDescriptor]:
         return self.__list
-    

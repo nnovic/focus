@@ -21,6 +21,14 @@ class CalendarEventDescriptor:
         Returns the event duration in hours.
         """
         return None
+
+    @property
+    def location(self) -> str|None:
+        return None
+
+    @property
+    def url(self) -> str|None:
+        return None
     
     # def __init__(self, summary: str, start: datetime, end: datetime = None, location: str = ""):
     #     self.title = summary

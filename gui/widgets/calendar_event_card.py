@@ -1,7 +1,8 @@
 from datetime import datetime
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QLabel
 from PyQt5.QtGui import QFont
-from PyQt5.QtCore import Qt, QTime
+from PyQt5.QtCore import Qt, QTime, QUrl
+from PyQt5.QtGui import QDesktopServices
 
 from core.calendar_event_descriptor import CalendarEventDescriptor
 from gui.widgets.concrete_card import ConcreteCard
@@ -23,6 +24,7 @@ class CalendarEventCard(ConcreteCard):
         else:
             self._bg_color = "#f5f5f5"  # upcoming: default
         self._duration_label = None
+        self._location_label = None
         self._init_ui()
         self.setFixedHeight(100)
 
@@ -44,9 +46,16 @@ class CalendarEventCard(ConcreteCard):
         self._update_style(hovered=False)
         super().leaveEvent(event)
 
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton and self.descriptor.url:
+            QDesktopServices.openUrl(QUrl(self.descriptor.url))
+        super().mouseReleaseEvent(event)
+
     def minimize(self):
         if self._duration_label:
             self._duration_label.hide()
+        if self._location_label:
+            self._location_label.hide()
         self.layout().setContentsMargins(10, 4, 10, 4)
         self.setFixedHeight(40)
 
@@ -86,6 +95,13 @@ class CalendarEventCard(ConcreteCard):
         summary_label.setFont(QFont("Arial", 12, QFont.Bold))
         summary_label.setWordWrap(True)
         right_layout.addWidget(summary_label)
+
+        if self.descriptor.location:
+            self._location_label = QLabel(self.descriptor.location)
+            self._location_label.setFont(QFont("Arial", 9))
+            self._location_label.setStyleSheet("color: #666;")
+            self._location_label.setWordWrap(True)
+            right_layout.addWidget(self._location_label)
 
         right_layout.addStretch()
         layout.addLayout(right_layout, 1)
