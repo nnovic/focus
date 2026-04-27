@@ -59,13 +59,26 @@ class CalendarEventCard(ConcreteCard):
         layout.setSpacing(15)
         layout.setContentsMargins(10, 10, 10, 10)
 
-        # Left side: time
+        # Left side: time and duration
+        left_layout = QVBoxLayout()
+        left_layout.setSpacing(2)
+
         time_label = QLabel(self.descriptor.start_time.strftime('%H:%M'))
         time_label.setFont(QFont("Arial", 14, QFont.Bold))
         time_label.setAlignment(Qt.AlignTop)
-        layout.addWidget(time_label)
+        left_layout.addWidget(time_label)
 
-        # Right side: summary and duration
+        if self.descriptor.duration:
+            self._duration_label = QLabel(f"{self.descriptor.duration:.1f}h")
+            self._duration_label.setFont(QFont("Arial", 9))
+            self._duration_label.setStyleSheet("color: #888;")
+            self._duration_label.setAlignment(Qt.AlignTop)
+            left_layout.addWidget(self._duration_label)
+
+        left_layout.addStretch()
+        layout.addLayout(left_layout)
+
+        # Right side: summary
         right_layout = QVBoxLayout()
         right_layout.setSpacing(5)
 
@@ -73,13 +86,6 @@ class CalendarEventCard(ConcreteCard):
         summary_label.setFont(QFont("Arial", 12, QFont.Bold))
         summary_label.setWordWrap(True)
         right_layout.addWidget(summary_label)
-
-        # Duration label if available
-        if self.descriptor.duration:
-            self._duration_label = QLabel(f"Duration: {self.descriptor.duration:.1f} hours")
-            self._duration_label.setFont(QFont("Arial", 9))
-            self._duration_label.setStyleSheet("color: #888;")
-            right_layout.addWidget(self._duration_label)
 
         right_layout.addStretch()
         layout.addLayout(right_layout, 1)
